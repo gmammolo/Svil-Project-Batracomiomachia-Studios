@@ -7,6 +7,9 @@
 package user;
 
 import db.Utente;
+import java.util.Timer;
+import javax.swing.JFrame;
+import message.TimeMessage;
 
 /**
  *
@@ -26,8 +29,11 @@ public class ChooseFrame extends javax.swing.JFrame {
     public ChooseFrame(Utente user) {
         this.user=user;
         initComponents();
+        LabelSaluto.setText("Benvenuto "+user.Username);
+        TimeMessage trd1 = new TimeMessage(user, StatusMessage);
+        Timer orologio = new Timer();
+        orologio.schedule(trd1, 0, 10000);
         
-        new Body(user,StatusMessage).Run();
         
     }
     
@@ -65,6 +71,11 @@ public class ChooseFrame extends javax.swing.JFrame {
         });
 
         ReadMessage.setText("Leggi Messaggio");
+        ReadMessage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ReadMessageActionPerformed(evt);
+            }
+        });
 
         DecriptMessage.setText("Decifrare Messaggio");
 
@@ -141,12 +152,24 @@ public class ChooseFrame extends javax.swing.JFrame {
 
     private void SendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SendMessageActionPerformed
         // TODO add your handling code here:
+        this.setVisible(false);
+        JFrame sendM = new SendMessage(user,this);
+        sendM.setVisible(true);
+        
+        
     }//GEN-LAST:event_SendMessageActionPerformed
 
     private void logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutActionPerformed
         // TODO add your handling code here:
         Status.setText("OPS, Pare che questo tasto non sia stato implementato in questa versione");
     }//GEN-LAST:event_logoutActionPerformed
+
+    private void ReadMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReadMessageActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        JFrame readM= new ReadMessages(user,this);
+        readM.setVisible(true);
+    }//GEN-LAST:event_ReadMessageActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -160,4 +183,9 @@ public class ChooseFrame extends javax.swing.JFrame {
     private javax.swing.JButton logout;
     private javax.swing.JLabel studiosLabel;
     // End of variables declaration//GEN-END:variables
+
+    public void sendMessage(String text)
+    {
+        Status.setText(text);
+    }
 }

@@ -66,8 +66,8 @@ public class Database {
     {
         try{
             Statement s = conn.createStatement();
-            //System.out.println("INSERT INTO " +Table+ " ( "+join(attr,",","")+" ) VALUES ("+join(value,",","'")+")");
-            s.execute("INSERT INTO " +Table+ "  ( "+join(attr,",","")+" ) VALUES ("+join(value,",","'")+")");
+            //System.out.println("INSERT INTO " +Table+ "  VALUES ("+join(value,",","'")+")");
+            s.execute("INSERT INTO " +Table+ "  VALUES ("+join(value,",","'")+")");
   
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -134,8 +134,10 @@ public class Database {
   
     public static Utente CheckUtente(String User, String Pass_Chiaro)
     {
+        
         try{
-          s.execute("SELECT * FROM UTENTE WHERE USERNAME='"+User+"' AND PASSWORD = '"+Pass_Chiaro+"'" );
+          String pass= (Pass_Chiaro == null ) ? ""  : "AND PASSWORD = '"+Pass_Chiaro+"'" ;
+          s.execute("SELECT * FROM UTENTE WHERE USERNAME='"+User+"' "+ pass );
           ResultSet rs = s.getResultSet();
           if(!rs.next())
               return null;
@@ -146,7 +148,69 @@ public class Database {
             return null;
         }
     }
+    
+    
+   
+    
+    
+    public static boolean CheckUtente(String User)
+    {
+        
+        try{
+         
+          s.execute("SELECT * FROM UTENTE WHERE USERNAME='"+User+"' ");
+          ResultSet rs = s.getResultSet();
+          if(!rs.next())
+              return false;
+          else
+              return true;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
   
+    
+    public static int GetLastValue(String Table, String column)
+    {
+        try{
+          //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
+          s.execute("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1");
+          ResultSet rs = s.getResultSet();
+          if(rs.next())
+          {
+               //int num=Integer.parseInt(rs.getString("NUM"))+1;
+              int num=rs.getInt("NUM")+1;
+               return num;
+          }
+          else
+              return 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return -1;
+        }
+    }
+    
+    public static ArrayList<Messaggio> GetMessageList(Utente reader, int limit)
+    {
+        ArrayList<Messaggio> list= new  ArrayList<Messaggio>();
+        try{
+            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
+            s.execute("SELECT * FROM MESSAGGIO \n" +
+                      "WHERE  RECEIVER = '"+reader.Username+"' \n" +
+                      "ORDER BY ISREAD ASC,ID\n" +
+                      "FETCH FIRST "+limit+" ROWS ONLY");
+            ResultSet rs = s.getResultSet();
+
+            while(rs.next())
+            {
+                list.add(new Messaggio(String.valueOf(rs.getInt("ID")), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") , rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD") ));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
     
     /**
      * Valida il testo inserito, ovvero rimuove i caratteri non accettabili
@@ -168,15 +232,31 @@ public class Database {
         return null;
       }
       StringBuilder out = new StringBuilder();
-      out.append( comma+s[0]+comma );
+      //out.append( comma+s[0]+comma );
+      out.append( getIntFormat(s[0],comma) );
       for ( int x=1; x < k; ++x )
       {
-        out.append(glue).append( comma+s[x]+comma);
+       // out.append(glue).append( comma+s[x]+comma);
+        out.append(glue).append( getIntFormat(s[x],comma) );
       }
       return out.toString();
     }
 
-    
+    /**
+     * Restituisce il valore nel giusto formato come stringa o come int
+     * per inserirlo al db
+     * @param val valore da testare
+     * @param comma virgole da usare
+     * @return 
+     */
+    private static String getIntFormat(String val,String comma)
+    {
+        try{
+            int iCheck = Integer.parseInt(val);
+            return val;
+        }
+        catch(NumberFormatException e) { return comma +val+ comma; }
+    }
 
     
 }

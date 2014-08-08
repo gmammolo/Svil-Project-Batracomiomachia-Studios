@@ -6,6 +6,8 @@
 
 package db;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author giuseppe
@@ -34,6 +36,11 @@ public class Messaggio {
     
     public Messaggio(String id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver)
     {
+        this("",testo,cifrato,metodo_criptaggio,lingua,sender,receiver, false);
+    }
+    
+    public Messaggio(String id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver, boolean isRead)
+    {
         Id=id;
         Testo=testo;
         Cifrato=cifrato;
@@ -41,14 +48,26 @@ public class Messaggio {
         Lingua=lingua;
         Sender=sender;
         Receiver=receiver;
-        IsRead=false;
+        IsRead=IsRead;
         
         
     }
+    
+   
     
     public void Insert()
     {
-        Database.Insert("MESSAGGIO", new String[0], new String[]{Id,Testo,Cifrato,Metodo_Criptaggio,Lingua,Sender,Receiver,String.valueOf(IsRead)});
+        Database.Insert("MESSAGGIO", new String[]{""}, new String[]{Id,Testo,Cifrato,Metodo_Criptaggio,Lingua,Sender,Receiver,String.valueOf(IsRead)});
     }
+ 
     
+     public static int GetLastID()
+     {
+        return Database.GetLastValue("MESSAGGIO", "ID");
+     }
+    
+     public static ArrayList<Messaggio> GetMessageList(Utente reader, int limit)
+     {
+        return Database.GetMessageList(reader, limit);
+     }
 }
