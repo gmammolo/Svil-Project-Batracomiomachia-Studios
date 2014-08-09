@@ -172,7 +172,7 @@ public class SendMessage extends javax.swing.JFrame {
             return;
         }
         //salvare nel db
-        new Messaggio(String.valueOf(ID),Testo.getText(),"",  (String)MetodoCriptaggio.getSelectedItem(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
+        new Messaggio(ID,Testo.getText(),"",  (String)MetodoCriptaggio.getSelectedItem(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
         Parent.sendMessage("Messaggio inviato con successo");
         Status.setText("Messaggio Inviato con successo");
         //chiudere

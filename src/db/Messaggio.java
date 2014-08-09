@@ -13,8 +13,10 @@ import java.util.ArrayList;
  * @author giuseppe
  */
 public class Messaggio {
+
+
     
-    public String Id;
+    public Integer Id;
     public String Testo;
     public String Cifrato;
     public String Metodo_Criptaggio;
@@ -26,20 +28,20 @@ public class Messaggio {
     
     public Messaggio(String testo)
     {
-        this("",testo,"","","","","");
+        this(-1,testo,"","","","","");
     }
     
     public Messaggio(String testo, String cifrato, String metodo_criptaggio, String lingua, String sender, String receiver)
     {
-        this("",testo,cifrato,metodo_criptaggio,lingua,sender,receiver);
+        this(-1,testo,cifrato,metodo_criptaggio,lingua,sender,receiver);
     }
     
-    public Messaggio(String id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver)
+    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver)
     {
-        this("",testo,cifrato,metodo_criptaggio,lingua,sender,receiver, false);
+        this(id,testo,cifrato,metodo_criptaggio,lingua,sender,receiver, false);
     }
     
-    public Messaggio(String id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver, boolean isRead)
+    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver, boolean isRead)
     {
         Id=id;
         Testo=testo;
@@ -48,26 +50,47 @@ public class Messaggio {
         Lingua=lingua;
         Sender=sender;
         Receiver=receiver;
-        IsRead=IsRead;
+        IsRead=isRead;
         
         
     }
     
    
-    
+    /**
+     * Metodo di inserimento nel DB
+     */
     public void Insert()
     {
-        Database.Insert("MESSAGGIO", new String[]{""}, new String[]{Id,Testo,Cifrato,Metodo_Criptaggio,Lingua,Sender,Receiver,String.valueOf(IsRead)});
+        if(Id >= 0)
+            Database.Insert("MESSAGGIO", new String[]{""}, new String[]{String.valueOf(Id),Testo,Cifrato,Metodo_Criptaggio,Lingua,Sender,Receiver,String.valueOf(IsRead)});
     }
  
-    
+    /**
+     * Metodo che restituisce l'id dell' ultimo messaggio nel DB
+     * @return l'ID dell' ultimo messaggio
+     */
      public static int GetLastID()
      {
         return Database.GetLastValue("MESSAGGIO", "ID");
      }
     
+     /**
+      * 
+      * @param reader Utente che legge
+      * @param limit limite massimo di messaggi da ricevere
+      * @return Lista del messaggio
+      */
      public static ArrayList<Messaggio> GetMessageList(Utente reader, int limit)
      {
         return Database.GetMessageList(reader, limit);
      }
+     
+     /**
+      * Setta un messaggio come già letto
+      * @param MessageID Id del messaggio da settare
+      */
+    public static void ReadMessage(int MessageID) {
+        Database.setReadMessage(MessageID);
+    
+    }
 }

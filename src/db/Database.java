@@ -27,12 +27,8 @@ public class Database {
     
     
     /**
-     * Aggiunge al db gli attributi passati nella giusta tabella
-     * @param Table Nome della tabella in cui inserire la tupla
-     * @param attr i valori della tupla
-     * @return 
+     * Metodo che inizializza la connessione al Db
      */
-    
     public static void Initializate()
     {
         try {
@@ -41,16 +37,21 @@ public class Database {
             System.err.println("Derby driver not found.");
             System.exit(0);
         }
-        
         try{
             conn = DriverManager.getConnection("jdbc:derby://localhost/Svil;create=true;user=APP;pass=APP");
             s = conn.createStatement();
         } catch (SQLException ex) {
             ex.printStackTrace();
+            System.err.println("Connessione Fallita");
             Close();
+            System.exit(0);
         }
     }
     
+    /**
+     * La connessione rimane aperta in modo statico finchè non verrà chiusa
+     * tramite questo metodo
+     */
     public static void Close()
     {
          try {
@@ -61,7 +62,12 @@ public class Database {
             System.exit(0);
         }
     }
-    
+    /**
+     * Aggiunge al db gli attributi passati nella giusta tabella
+     * @param Table Nome della tabella in cui inserire la tupla
+     * @param attr i valori della tupla
+     * @return true in caso di successo, false altrimenti
+     */
     public static boolean Insert(String Table, String[] attr, String[] value)
     {
         try{
@@ -78,7 +84,11 @@ public class Database {
     }
     
    
-    
+  /**
+   * 
+   * @return ArrayList&lt;Utente&gt; Ritorna la lista di tutti gli utenti che esistono
+   * nel db.
+   */  
   public static ArrayList<Utente> GetAllUtenti()
   {
     ResultSet rs=  GetAllTuple("Utente");
@@ -97,6 +107,11 @@ public class Database {
            
   }
     
+  /**
+   * Verifica l'esistenza di messaggi non letti
+   * @param receiver Id-Username dell' utente da verificare
+   * @return il numero di messaggi
+   */
   public static int CheckMessage(String receiver)
   {
       try{
@@ -114,7 +129,11 @@ public class Database {
       
   }
   
-  
+  /**
+   * Metodo Privato: Ritorna tutte le tuple di una determinata tabella
+   * @param Tables tabella in cui cercare le tuple
+   * @return ResultSet con il risultato o null in caso di fallimento
+   */
   private static ResultSet GetAllTuple(String Tables)
   {
       try{
@@ -127,11 +146,15 @@ public class Database {
       } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
-        }
-      
-      
+      }
   }
   
+  /**
+   * Verifica e ritorna l'utente con un username o password. 
+   * @param User Username dell' utente
+   * @param Pass_Chiaro FACOLTATIVA: verifica della password per login
+   * @return Utente che corrisponde ai dati inseriti
+   */
     public static Utente CheckUtente(String User, String Pass_Chiaro)
     {
         
@@ -152,7 +175,11 @@ public class Database {
     
    
     
-    
+    /**
+     * DEPRECATED: Metodo di verifica dell' esistenza di un utente nel db 
+     * @param User
+     * @return True: esiste False: non esiste
+     */
     public static boolean CheckUtente(String User)
     {
         
@@ -170,7 +197,12 @@ public class Database {
         }
     }
   
-    
+    /**
+     * Metodo utilizzato per sopperire alla mancanza dell' autoincrement.
+     * @param Table Nome della tabella
+     * @param column Nome della colonna di Integer
+     * @return Valore più grande della colonna
+     */
     public static int GetLastValue(String Table, String column)
     {
         try{
@@ -191,6 +223,12 @@ public class Database {
         }
     }
     
+    /**
+     * Restituisce la lista dei messaggi 
+     * @param reader Username dell' utente richiedente
+     * @param limit numero massimo di messaggi da leggere
+     * @return ArrayList&lt;Messaggio&gt; Lista messaggi
+     */
     public static ArrayList<Messaggio> GetMessageList(Utente reader, int limit)
     {
         ArrayList<Messaggio> list= new  ArrayList<Messaggio>();
@@ -204,7 +242,7 @@ public class Database {
 
             while(rs.next())
             {
-                list.add(new Messaggio(String.valueOf(rs.getInt("ID")), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") , rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD") ));
+                list.add(new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") , rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD") ));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -223,7 +261,14 @@ public class Database {
     }
     
     
-    
+    /**
+     * Effettua il join di un array di string nella formattazione adatta per l'inserimento
+     * nel database
+     * @param s Array di Stringhe
+     * @param glue Carattere di separazione (es. ",")
+     * @param comma Carattere di virgolette (es " o ' )
+     * @return Stringa formattata per essere inserita nelle quary insert del db
+     */
     public static String join(String[] s, String glue,String comma)
     {
       int k = s.length;
@@ -256,6 +301,19 @@ public class Database {
             return val;
         }
         catch(NumberFormatException e) { return comma +val+ comma; }
+    }
+
+    /**
+     * Setta un messaggio come letto
+     * @param MessageID Id del messaggio
+     */
+    static void setReadMessage(int MessageID) {
+        
+        try{ 
+          s.execute("UPDATE APP.MESSAGGIO SET \"ISREAD\" = true WHERE ID = "+MessageID);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     

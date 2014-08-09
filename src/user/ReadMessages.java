@@ -10,6 +10,8 @@ import db.Messaggio;
 import db.Utente;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -32,6 +34,12 @@ public class ReadMessages extends javax.swing.JFrame {
         this.reader=reader;
         this.parent=parent;
         initComponents();
+        CreaLista();
+        
+    }
+
+    private void CreaLista()
+    {
         ArrayList<Messaggio> list=Messaggio.GetMessageList(reader,10);
         PanelMenu.setLayout(new GridLayout(list.size()+1 , 4 ));
         PanelMenu.add(new JLabel("Read"));
@@ -41,7 +49,8 @@ public class ReadMessages extends javax.swing.JFrame {
         
         for(Messaggio mess : list)
         {
-            JButton but=new JButton("Read");
+            ReadButton but=new ReadButton(mess.Id);
+            but.addActionListener(but);
             but.setBorder(BorderFactory.createLineBorder(Color.black));
             PanelMenu.add(but);
             
@@ -60,7 +69,7 @@ public class ReadMessages extends javax.swing.JFrame {
         PanelMenu.setBorder(BorderFactory.createLineBorder(Color.black));
         this.pack();
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -130,4 +139,34 @@ public class ReadMessages extends javax.swing.JFrame {
     private javax.swing.JButton Annulla;
     private javax.swing.JPanel PanelMenu;
     // End of variables declaration//GEN-END:variables
+
+
+    private void Refresh()
+    {
+//        this.dispose();
+//        new ReadMessages(reader, parent).setVisible(true);
+        PanelMenu.removeAll();
+        CreaLista();
+    }
+    
+    /*bottone personalizzato per settare i messaggi come letti */
+    private class ReadButton extends JButton implements ActionListener
+    {
+        int MessageID;
+        
+        public ReadButton(int MessageID)
+        {
+            super("Read");
+            this.MessageID=MessageID;
+            
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //read Message
+            Messaggio.ReadMessage(MessageID);
+            Refresh();
+            
+        }
+    }
 }
