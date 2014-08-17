@@ -6,6 +6,7 @@
 
 package db;
 
+import db.DataBaseElement.Type;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -40,9 +41,14 @@ public class Utente {
      */
     public static void AddUtente(String User, String Pass_Chiaro)
     {
-        Database.Insert("Utente",new String[]{"Username","Password" },new String[]{User,Pass_Chiaro});
-       
+        Database.Insert("Utente", new DataBaseElement[]{
+                                        new DataBaseElement(Type.STRING, User),
+                                        new DataBaseElement(Type.STRING, User)
+                                    });
     }
+                
+                
+//                new String[]{User,Pass_Chiaro});
     
     /**
      * Verifica la presenza di messaggi dell' utente
@@ -65,7 +71,7 @@ public class Utente {
     }
     
     /**
-     * Deprecated (?)
+     * @deprecated
      * @param User
      * @param Pass_Chiaro
      * @return 

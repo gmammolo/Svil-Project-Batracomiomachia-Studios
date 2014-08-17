@@ -6,6 +6,7 @@
 
 package user;
 
+import cifrario.Metodo_Criptaggio;
 import db.Database;
 import db.Messaggio;
 import db.Utente;
@@ -78,7 +79,7 @@ public class SendMessage extends javax.swing.JFrame {
 
         IsBozza.setText("Bozza");
 
-        MetodoCriptaggio.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cifrario di Cesare", "Sostituzione" }));
+        MetodoCriptaggio.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Nessuno", "Cifrario di Cesare", "Sostituzione" }));
 
         jLabel3.setText("Metodo di Cifratura:");
 
@@ -172,7 +173,20 @@ public class SendMessage extends javax.swing.JFrame {
             return;
         }
         //salvare nel db
-        new Messaggio(ID,Testo.getText(),"",  (String)MetodoCriptaggio.getSelectedItem(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
+        Metodo_Criptaggio method= Metodo_Criptaggio.NESSUNO;
+        switch ((String)MetodoCriptaggio.getSelectedItem())
+        {
+            case "Sostituzione":
+                method= Metodo_Criptaggio.NESSUNO;
+                break;
+            case "Cifrario di Cesare":
+                method= Metodo_Criptaggio.CIFRARIO_DI_CESARE;
+                break;
+            default:
+                method= Metodo_Criptaggio.NESSUNO;
+                break;
+        }
+        new Messaggio(ID,Testo.getText(),"",  method.name(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
         Parent.sendMessage("Messaggio inviato con successo");
         Status.setText("Messaggio Inviato con successo");
         //chiudere

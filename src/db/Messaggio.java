@@ -6,12 +6,19 @@
 
 package db;
 
+import cifrario.CifrarioCesare;
+import cifrario.CryptSystem;
+import cifrario.Metodo_Criptaggio;
+import db.DataBaseElement.Type;
 import java.util.ArrayList;
 
 /**
  *
  * @author giuseppe
  */
+
+
+
 public class Messaggio {
 
 
@@ -19,16 +26,19 @@ public class Messaggio {
     public Integer Id;
     public String Testo;
     public String Cifrato;
-    public String Metodo_Criptaggio;
+    public Metodo_Criptaggio CryptMethod;
     public String Lingua;
     public String Sender;
     public String Receiver;
     public boolean IsRead;
     
+    private String metakey;
+    
+    public CifraturaOptions Informazioni_Cifratura;
     
     public Messaggio(String testo)
     {
-        this(-1,testo,"","","","","");
+        this(-1,testo,"",Metodo_Criptaggio.NESSUNO.name(),"","","");
     }
     
     public Messaggio(String testo, String cifrato, String metodo_criptaggio, String lingua, String sender, String receiver)
@@ -38,20 +48,23 @@ public class Messaggio {
     
     public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver)
     {
-        this(id,testo,cifrato,metodo_criptaggio,lingua,sender,receiver, false);
+        this(id,testo,cifrato,metodo_criptaggio,"",lingua,sender,receiver, false);
     }
     
-    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver, boolean isRead)
+    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String metakey, String lingua,String sender, String receiver, boolean isRead)
     {
         Id=id;
         Testo=testo;
         Cifrato=cifrato;
-        Metodo_Criptaggio=metodo_criptaggio;
+        CryptMethod= Metodo_Criptaggio.valueOf(metodo_criptaggio);
+        this.metakey=metakey;
         Lingua=lingua;
         Sender=sender;
         Receiver=receiver;
         IsRead=isRead;
-        
+        Informazioni_Cifratura=new CifraturaOptions();
+        if(Cifrato=="")
+            Cifra();
         
     }
     
@@ -62,7 +75,24 @@ public class Messaggio {
     public void Insert()
     {
         if(Id >= 0)
-            Database.Insert("MESSAGGIO", new String[]{""}, new String[]{String.valueOf(Id),Testo,Cifrato,Metodo_Criptaggio,Lingua,Sender,Receiver,String.valueOf(IsRead)});
+            Database.Insert("MESSAGGIO", new DataBaseElement[]
+                                            {
+                                                new DataBaseElement(Type.INT, Id),
+                                                new DataBaseElement(Type.STRING, Testo),
+                                                new DataBaseElement(Type.STRING, Cifrato),
+                                                new DataBaseElement(Type.STRING, CryptMethod.name()),
+                                                new DataBaseElement(Type.STRING, Lingua),
+                                                new DataBaseElement(Type.STRING, Sender),
+                                                new DataBaseElement(Type.STRING, Receiver),
+                                                new DataBaseElement(Type.BOOL, String.valueOf(IsRead)),
+                                                new DataBaseElement(Type.STRING, metakey)
+                                            });
+    }
+    
+    public void Cifra()
+    {
+       metakey =  Informazioni_Cifratura.InfoMethod.GenerateKey();
+       Cifrato = Informazioni_Cifratura.InfoMethod.Crypt(Testo, metakey);
     }
  
     /**
@@ -93,4 +123,20 @@ public class Messaggio {
         Database.setReadMessage(MessageID);
     
     }
+    
+    public class CifraturaOptions {
+        
+        public CryptSystem InfoMethod;
+        
+        public CifraturaOptions()
+        {
+            if(CryptMethod ==  Metodo_Criptaggio.CIFRARIO_DI_CESARE)
+                InfoMethod = new CifrarioCesare();
+        }
+    }
+    
+
 }
+
+
+

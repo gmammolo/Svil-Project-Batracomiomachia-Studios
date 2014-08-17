@@ -65,15 +65,15 @@ public class Database {
     /**
      * Aggiunge al db gli attributi passati nella giusta tabella
      * @param Table Nome della tabella in cui inserire la tupla
-     * @param attr i valori della tupla
+     * @param types i valori della tupla
      * @return true in caso di successo, false altrimenti
      */
-    public static boolean Insert(String Table, String[] attr, String[] value)
+    public static boolean Insert(String Table, DataBaseElement[] elements)
     {
         try{
             Statement s = conn.createStatement();
             //System.out.println("INSERT INTO " +Table+ "  VALUES ("+join(value,",","'")+")");
-            s.execute("INSERT INTO " +Table+ "  VALUES ("+join(value,",","'")+")");
+            s.execute("INSERT INTO " +Table+ "  VALUES ("+join(elements,",","'")+")");
   
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -242,7 +242,7 @@ public class Database {
 
             while(rs.next())
             {
-                list.add(new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") , rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD") ));
+                list.add(new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD")));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -269,30 +269,32 @@ public class Database {
      * @param comma Carattere di virgolette (es " o ' )
      * @return Stringa formattata per essere inserita nelle quary insert del db
      */
-    public static String join(String[] s, String glue,String comma)
+    public static String join(DataBaseElement[] elements, String glue,String comma)
     {
-      int k = s.length;
+      int k = elements.length;
       if ( k == 0 )
       {
         return null;
       }
       StringBuilder out = new StringBuilder();
       //out.append( comma+s[0]+comma );
-      out.append( getIntFormat(s[0],comma) );
+      out.append( elements[0].GetElementForDB(comma) );
       for ( int x=1; x < k; ++x )
       {
        // out.append(glue).append( comma+s[x]+comma);
-        out.append(glue).append( getIntFormat(s[x],comma) );
+        out.append(glue).append( elements[x].GetElementForDB(comma) );
       }
       return out.toString();
     }
 
-    /**
+    /** 
+     * @deprecated
      * Restituisce il valore nel giusto formato come stringa o come int
      * per inserirlo al db
      * @param val valore da testare
      * @param comma virgole da usare
      * @return 
+     * 
      */
     private static String getIntFormat(String val,String comma)
     {
