@@ -7,6 +7,7 @@
 package db;
 
 import cifrario.CifrarioCesare;
+import cifrario.CifrarioSostituzione;
 import cifrario.CryptSystem;
 import cifrario.Metodo_Criptaggio;
 import db.DataBaseElement.Type;
@@ -92,7 +93,7 @@ public class Messaggio {
     public void Cifra()
     {
        metakey =  Informazioni_Cifratura.InfoMethod.GenerateKey();
-       Cifrato = Informazioni_Cifratura.InfoMethod.Crypt(Testo, metakey);
+       Cifrato = Informazioni_Cifratura.InfoMethod.Crypt(Testo);
     }
  
     /**
@@ -131,7 +132,21 @@ public class Messaggio {
         public CifraturaOptions()
         {
             if(CryptMethod ==  Metodo_Criptaggio.CIFRARIO_DI_CESARE)
-                InfoMethod = new CifrarioCesare();
+            {
+                if(metakey != null && !metakey.equals(""))
+                    InfoMethod = new CifrarioCesare(metakey);
+                else
+                    InfoMethod = new CifrarioCesare(); 
+            }
+            else if(CryptMethod ==  Metodo_Criptaggio.SOSTITUZIONE)
+            {
+                if(metakey != null && !metakey.equals(""))
+                    InfoMethod = new CifrarioSostituzione(metakey);
+                else
+                    InfoMethod = new CifrarioSostituzione(); 
+            }
+            
+            
         }
     }
     

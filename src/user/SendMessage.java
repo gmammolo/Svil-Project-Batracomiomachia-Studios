@@ -177,7 +177,7 @@ public class SendMessage extends javax.swing.JFrame {
         switch ((String)MetodoCriptaggio.getSelectedItem())
         {
             case "Sostituzione":
-                method= Metodo_Criptaggio.NESSUNO;
+                method= Metodo_Criptaggio.SOSTITUZIONE;
                 break;
             case "Cifrario di Cesare":
                 method= Metodo_Criptaggio.CIFRARIO_DI_CESARE;

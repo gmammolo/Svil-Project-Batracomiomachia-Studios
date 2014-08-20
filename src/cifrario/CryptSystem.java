@@ -12,14 +12,28 @@ package cifrario;
  */
 public abstract class CryptSystem {
     
-    public abstract String Crypt( String s , String chiave );
+    protected static String alfabeto = new String("abcdefghilmnopqrstuvz") ;
+//    protected static String alfabeto = new String("abcde") ;
+    protected static int length = alfabeto.length();
     
-    public abstract String Decrypt( String s , String chiave );
+    public abstract String Crypt( String s );
+    
+    public abstract String Decrypt( String s );
     
     public abstract String GenerateKey() ;
+    
+    public abstract String Serialize() ;
+    
+    public abstract void Deserialize(String Metakey) ;
     
     public CryptSystem()
     {
         
+    }
+    
+    public CryptSystem(String Metakey)
+    {
+        if(!Metakey.equals(""))
+            Deserialize(Metakey);
     }
 }

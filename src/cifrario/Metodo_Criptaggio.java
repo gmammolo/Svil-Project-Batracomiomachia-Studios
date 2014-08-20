@@ -7,5 +7,5 @@
 package cifrario;
 
 public enum Metodo_Criptaggio {
-    NESSUNO,CIFRARIO_DI_CESARE ; 
+    NESSUNO,CIFRARIO_DI_CESARE,SOSTITUZIONE ; 
 }

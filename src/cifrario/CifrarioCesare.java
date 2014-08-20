@@ -9,20 +9,34 @@ package cifrario;
 import java.util.* ;
 public class CifrarioCesare extends CryptSystem {
 
-    protected static String alfabeto = new String("abcdefghilmnopqrstuvz") ;
-    protected static int length = alfabeto.length();
     
-    public String GenerateKey() {return String.valueOf(GenerateKeyCesare());}
+    protected int Key;
     
-    
-    public Integer GenerateKeyCesare()
+    public CifrarioCesare()
     {
-        return 1 + (int)(Math.random()*length); 
+        
     }
     
-    public String Crypt( String s , String chiave ) 
+    
+    public CifrarioCesare(String metakey)
     {
-        return Crypt(  s , Integer.parseInt(chiave) );
+        super(metakey);
+    }
+    
+    public String GenerateKey() {
+        GenerateKeyCesare();
+        return Serialize();
+    }
+    
+    
+    protected void GenerateKeyCesare()
+    {
+        Key = 1 + (int)(Math.random()*length); 
+    }
+    
+    public String Crypt( String s ) 
+    {
+        return Crypt(  s , Key );
     }
     
     public String Crypt( String s , int chiave ) {
@@ -46,9 +60,9 @@ public class CifrarioCesare extends CryptSystem {
        }
     
     
-    public String Decrypt( String s , String chiave ) 
+    public String Decrypt( String s) 
     {
-        return Decrypt(  s , Integer.parseInt(chiave) );
+        return Decrypt(  s , Key );
     }
     
     public String Decrypt(String s , int chiave)
@@ -69,6 +83,25 @@ public class CifrarioCesare extends CryptSystem {
             }         
         }
         return stringa;
+    }
+
+    @Override
+    public String Serialize() {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return String.valueOf(Key);
+    
+    }
+
+    @Override
+    public void Deserialize(String Metakey) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            Key=Integer.parseInt(Metakey);
+        }
+        catch(NumberFormatException e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
        
        
