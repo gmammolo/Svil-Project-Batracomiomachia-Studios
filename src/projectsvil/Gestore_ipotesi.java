@@ -18,10 +18,13 @@ public class Gestore_ipotesi {
      ArrayList<String> L = new ArrayList<String>();
 }
     
+
     /**
      * sostituisce la lettera e aggiorna la lista
+     * @param V
+     * @param N
+     * @return 
      */
-    
     public String sostituisciLettera(String V, String N){
         /*
         if(la coppia non è già presente nellarraylist)

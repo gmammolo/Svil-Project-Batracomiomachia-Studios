@@ -21,13 +21,13 @@ public class ChooseFrame extends javax.swing.JFrame {
 
     public Utente user;
     private LoginForm Parent;
-    /**
-     * Creates new form ChooseFrame
-     */
-//    public ChooseFrame() {
-//        initComponents();
-//    }
 
+
+    /**
+     * 
+     * @param user
+     * @param Parent 
+     */
     public ChooseFrame(Utente user, LoginForm Parent) {
         this.user=user;
         this.Parent = Parent;

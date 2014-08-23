@@ -62,10 +62,12 @@ public class Database {
             System.exit(0);
         }
     }
+
     /**
      * Aggiunge al db gli attributi passati nella giusta tabella
-     * @param Table Nome della tabella in cui inserire la tupla
-     * @param types i valori della tupla
+     * @param Table  Nome della tabella in cui inserire la tupla
+     * @param column Array con i nomi dellle colonne
+     * @param elements i valori della tupla
      * @return true in caso di successo, false altrimenti
      */
     public static boolean Insert(String Table,String[] column, DataBaseElement[] elements)
@@ -355,7 +357,7 @@ public class Database {
     /**
      * Effettua il join di un array di string nella formattazione adatta per l'inserimento
      * nel database
-     * @param s Array di Stringhe
+     * @param elements di Stringhe
      * @param glue Carattere di separazione (es. ",")
      * @param comma Carattere di virgolette (es " o ' )
      * @return Stringa formattata per essere inserita nelle quary insert del db

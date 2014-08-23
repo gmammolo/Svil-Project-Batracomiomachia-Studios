@@ -9,11 +9,17 @@ package db;
 import com.sun.org.apache.bcel.internal.generic.ObjectType;
 
 /**
- *
+ * Classe generata con lo scopo di contenente gli elementi che andranno inseriti nel db
+ * con le informazioni necessarie per poterle caricare correttamente nel db
  * @author Giuseppe
  */
 public class DataBaseElement {
     
+    /**
+     * Tipo dell' object da inserire nel DB.
+     * QUesta enumerazione serve per gestire al meglio i vari elementi che hanno
+     * sintassi di inserimento diverse nel DB
+     */
     public enum Type {
         NULL,
         INT,
@@ -30,6 +36,11 @@ public class DataBaseElement {
         this.element=element;
     }
     
+    /**
+     * Restituisce l'elemento con la giusta sintassi per essere inserito nel DB
+     * @param comma Virgolette da utilizzare nel caso in cui siano richieste nella sintassi dell' elemento
+     * @return Stringa con la giusta sintassi per essere inserita nel db
+     */
     public String GetElementForDB(String comma)
     {
 //            int iCheck = Integer.parseInt((String)element);
