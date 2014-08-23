@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package projectsvil;
+package controller;
 
 import java.util.ArrayList;
 

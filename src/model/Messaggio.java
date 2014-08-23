@@ -4,13 +4,13 @@
  * and open the template in the editor.
  */
 
-package db;
+package model;
 
 import cifrario.CifrarioCesare;
 import cifrario.CifrarioSostituzione;
 import cifrario.CryptSystem;
 import cifrario.Metodo_Criptaggio;
-import db.DataBaseElement.Type;
+import model.DataBaseElement.Type;
 import java.util.ArrayList;
 
 /**

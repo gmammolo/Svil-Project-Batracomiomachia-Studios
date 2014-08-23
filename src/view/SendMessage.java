@@ -4,13 +4,13 @@
  * and open the template in the editor.
  */
 
-package user;
+package view;
 
 import cifrario.Metodo_Criptaggio;
 import controller.GuiController;
-import db.Database;
-import db.Messaggio;
-import db.Utente;
+import model.Database;
+import model.Messaggio;
+import model.Utente;
 
 /**
  *

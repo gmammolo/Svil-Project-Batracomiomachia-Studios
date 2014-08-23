@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package db;
+package model;
 
 import com.sun.org.apache.bcel.internal.generic.ObjectType;
 

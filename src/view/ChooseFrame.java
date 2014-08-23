@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-package user;
+package view;
 
 import controller.GuiController;
-import db.Utente;
+import model.Utente;
 import java.util.Timer;
 import javafx.scene.Parent;
 import javax.swing.JFrame;

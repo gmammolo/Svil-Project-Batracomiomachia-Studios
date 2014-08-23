@@ -6,15 +6,15 @@
 
 package projectsvil;
 
-import db.Database;
-import db.Utente;
+import view.LoginForm;
+import model.Database;
+import model.Utente;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
-import user.*;
 
 /**
  *

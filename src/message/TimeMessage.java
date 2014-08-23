@@ -6,8 +6,8 @@
 
 package message;
 
-import db.Database;
-import db.Utente;
+import model.Database;
+import model.Utente;
 import java.awt.event.ActionListener;
 import java.util.TimerTask;
 import javax.swing.JLabel;

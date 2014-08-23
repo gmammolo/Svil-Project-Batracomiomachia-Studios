@@ -4,9 +4,9 @@
  * and open the template in the editor.
  */
 
-package db;
+package model;
 
-import db.DataBaseElement.Type;
+import model.DataBaseElement.Type;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
