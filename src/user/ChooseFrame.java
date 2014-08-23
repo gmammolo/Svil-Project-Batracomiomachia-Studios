@@ -155,7 +155,7 @@ public class ChooseFrame extends javax.swing.JFrame {
 
     private void SendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SendMessageActionPerformed
         // TODO add your handling code here:
-        GuiController.GoSendMessage(user, this);
+        GuiController.NewMessage(user, this);
         
         
     }//GEN-LAST:event_SendMessageActionPerformed

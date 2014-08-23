@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import user.ChooseFrame;
 import user.LoginForm;
+import user.ReadMessage;
 import user.ReadMessages;
 import user.SendMessage;
 
@@ -74,8 +75,21 @@ public class GuiController {
         Son.dispose();
     }
     
+    public static void RispondiMessaggio(Utente user, JFrame This, String Destinatario)
+    {
+        This.setVisible(false);
+        JFrame sendM = new SendMessage(user,Destinatario,(ChooseFrame)This);
+        sendM.setVisible(true);
+    }
     
-    public static void GoSendMessage(Utente user, JFrame This)
+    public static void InoltraMessaggio(Utente user, JFrame This, String Testo)
+    {
+        This.setVisible(false);
+        JFrame sendM = new SendMessage(user,(ChooseFrame)This,Testo);
+        sendM.setVisible(true);
+    }
+    
+    public static void NewMessage(Utente user, JFrame This)
     {
         This.setVisible(false);
         JFrame sendM = new SendMessage(user,(ChooseFrame)This);
@@ -89,7 +103,16 @@ public class GuiController {
         readM.setVisible(true);
     }
     
-    public static void ReadMessage(int MessageID)
+    public static void GoReadMessage(Utente User,Messaggio Mess,ReadMessages This, ChooseFrame Parent)
+    {
+        SetReadMessage(Mess.Id);
+        This.setVisible(false);
+        JFrame readM= new ReadMessage(User,Mess,Parent);
+        readM.setVisible(true);
+        
+    }
+    
+    protected static void SetReadMessage(int MessageID)
     {
             Messaggio.ReadMessage(MessageID);
             
@@ -134,4 +157,6 @@ public class GuiController {
         This.dispose();
         
     }
+    
+
 }

@@ -50,12 +50,12 @@ public class ReadMessages extends javax.swing.JFrame {
         
         for(Messaggio mess : list)
         {
-            ReadButton but=new ReadButton(mess.Id);
+            ReadButton but=new ReadButton(mess,this);
             but.addActionListener(but);
             but.setBorder(BorderFactory.createLineBorder(Color.black));
             PanelMenu.add(but);
             
-            JLabel label=new JLabel(mess.Testo);
+            JLabel label=new JLabel(LimitedMessage(mess.Testo));
             label.setBorder(BorderFactory.createLineBorder(Color.black));
             PanelMenu.add(label);
             
@@ -151,22 +151,36 @@ public class ReadMessages extends javax.swing.JFrame {
         CreaLista();
     }
     
+    
+        protected static String LimitedMessage(String Messaggio)
+    {
+        return LimitedMessage(Messaggio, 30);
+    }
+    
+    protected static String LimitedMessage(String Messaggio, int Limit)
+    {
+        int lim = (Limit < Messaggio.length()) ? Limit :  Messaggio.length();
+        String plus= (lim < Messaggio.length()) ? "..." : "";
+        return Messaggio.substring(0,lim)+ plus;
+    }
+    
     /*bottone personalizzato per settare i messaggi come letti */
     private class ReadButton extends JButton implements ActionListener
     {
-        int MessageID;
-        
-        public ReadButton(int MessageID)
+        Messaggio Mess;
+        ReadMessages This;
+        public ReadButton(Messaggio messaggio, ReadMessages This)
         {
             super("Read");
-            this.MessageID=MessageID;
+            this.Mess=messaggio;
+            this.This=This;
             
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             //read Message
-            GuiController.ReadMessage(MessageID);
+            GuiController.GoReadMessage(reader,Mess,This,parent);
             Refresh();
 
             

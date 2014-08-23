@@ -25,9 +25,27 @@ public class SendMessage extends javax.swing.JFrame {
      * Creates new form SendMessage
      */
     public SendMessage(Utente user, ChooseFrame parent) {
+//        this.Sender=user;
+//        this.Parent=parent;
+//        initComponents();
+        this(user,"...",parent,"");
+    }
+    
+    public SendMessage(Utente user,String destinatario, ChooseFrame parent) {
+        this(user,destinatario,parent,"");
+    }
+    
+    public SendMessage(Utente user, ChooseFrame parent, String Testo) {
+        this(user,"...",parent,Testo);
+    }
+    
+    public SendMessage(Utente user,String destinatario, ChooseFrame parent, String testo) {
         this.Sender=user;
         this.Parent=parent;
         initComponents();
+        
+        Destinatario.setText(destinatario);
+        Testo.setText(testo);
     }
 
     /**
