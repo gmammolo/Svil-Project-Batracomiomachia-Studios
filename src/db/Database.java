@@ -29,7 +29,7 @@ public class Database {
     /**
      * Metodo che inizializza la connessione al Db
      */
-    public static void Initializate()
+    public static void Initialize()
     {
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
@@ -61,6 +61,19 @@ public class Database {
             System.err.println("Error During Close");
             System.exit(0);
         }
+    }
+    
+    /**
+     * semplice metodo di riempimento del database java
+     */
+    
+    public static void popola(){
+        try{
+            Initialize();
+            populatetable.creaTabelle(s);
+            Close();
+        } catch (SQLException e) {
+        System.out.print(e);}
     }
     /**
      * Aggiunge al db gli attributi passati nella giusta tabella

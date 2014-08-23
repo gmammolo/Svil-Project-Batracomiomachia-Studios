@@ -6,8 +6,9 @@
 
 package projectsvil;
 
-import db.Database;
-import db.Utente;
+import db.*;
+//import db.Database;
+//import db.Utente;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -27,7 +28,8 @@ public class ProjectSvil {
      */
     public static void main(String[] args){
         // TODO code application logic here
-        Database.Initializate();
+        db.Database.popola();
+       // Database.Initialize();
         
         
         JFrame login=new LoginForm();
