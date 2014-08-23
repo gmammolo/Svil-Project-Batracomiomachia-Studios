@@ -6,6 +6,7 @@
 
 package user;
 
+import controller.GuiController;
 import db.Messaggio;
 import db.Utente;
 import java.awt.Color;
@@ -130,8 +131,9 @@ public class ReadMessages extends javax.swing.JFrame {
 
     private void AnnullaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnnullaActionPerformed
         // TODO add your handling code here:
-        parent.setVisible(true);
-        this.dispose();
+        GuiController.UndoFrame(parent, this);
+//        parent.setVisible(true);
+//        this.dispose();
     }//GEN-LAST:event_AnnullaActionPerformed
 
 
@@ -141,7 +143,7 @@ public class ReadMessages extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
 
-    private void Refresh()
+    public void Refresh()
     {
 //        this.dispose();
 //        new ReadMessages(reader, parent).setVisible(true);
@@ -164,8 +166,9 @@ public class ReadMessages extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             //read Message
-            Messaggio.ReadMessage(MessageID);
+            GuiController.ReadMessage(MessageID);
             Refresh();
+
             
         }
     }

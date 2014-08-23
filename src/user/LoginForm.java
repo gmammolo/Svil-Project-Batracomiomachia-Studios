@@ -6,6 +6,7 @@
 
 package user;
 
+import controller.GuiController;
 import db.Utente;
 import javax.swing.JFrame;
 
@@ -38,7 +39,7 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         Username = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        loginButton = new javax.swing.JButton();
         Password = new javax.swing.JPasswordField();
         StatusMessage = new javax.swing.JLabel();
 
@@ -64,11 +65,11 @@ public class LoginForm extends javax.swing.JFrame {
 
         jLabel5.setText("Password:");
 
-        jButton1.setText("Connettiti");
-        jButton1.setToolTipText("");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        loginButton.setText("Connettiti");
+        loginButton.setToolTipText("");
+        loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                loginButtonActionPerformed(evt);
             }
         });
 
@@ -100,7 +101,7 @@ public class LoginForm extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(44, 44, 44)
-                                .addComponent(jButton1))
+                                .addComponent(loginButton))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(Username, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE))
@@ -130,7 +131,7 @@ public class LoginForm extends javax.swing.JFrame {
                     .addComponent(jLabel5)
                     .addComponent(Password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(41, 41, 41)
-                .addComponent(jButton1)
+                .addComponent(loginButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addComponent(StatusMessage)
                 .addGap(25, 25, 25))
@@ -150,35 +151,11 @@ public class LoginForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         // TODO add your handling code here:
-        /*
-            NOTA: a causa del suo status di progetto a scopo dimostrativo,
-            Il field password sarà convertito in una stringa e trattato come
-            una normale stringa.
-        */
-        String pass= "";
-        for(char c :  Password.getPassword() )
-        {
-            pass+=String.valueOf(c);
-        }
-        
-        
-        if(Utente.CheckUtente(Username.getText(), pass ))
-        {
-            StatusMessage.setText("Login Avvenuto con Successo!");
-            JFrame frame= new ChooseFrame(Utente.GetUtente(Username.getText(), pass ));
-            frame.setVisible(true);
-            
-            
-        }
-        else
-        {
-            StatusMessage.setText("Login Fallito!");
-        }
-        
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
+        GuiController.LoginController(Username,Password,StatusMessage,this);
+       
+    }//GEN-LAST:event_loginButtonActionPerformed
 
     private void UsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UsernameActionPerformed
         // TODO add your handling code here:
@@ -189,12 +166,12 @@ public class LoginForm extends javax.swing.JFrame {
     private javax.swing.JPasswordField Password;
     private javax.swing.JLabel StatusMessage;
     private javax.swing.JTextField Username;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton loginButton;
     // End of variables declaration//GEN-END:variables
 }

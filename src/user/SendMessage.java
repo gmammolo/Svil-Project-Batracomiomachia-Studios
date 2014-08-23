@@ -7,6 +7,7 @@
 package user;
 
 import cifrario.Metodo_Criptaggio;
+import controller.GuiController;
 import db.Database;
 import db.Messaggio;
 import db.Utente;
@@ -157,42 +158,42 @@ public class SendMessage extends javax.swing.JFrame {
 
     private void SendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SendActionPerformed
         // TODO add your handling code here:
-        
+        GuiController.SendMessage(Destinatario, Status, MetodoCriptaggio, Testo,Linguaggio, Sender, Parent, this);
         //verificare il Destinatario
-        String Dest = (Database.CheckUtente(Destinatario.getText())) ? Destinatario.getText() : "";
-        if(Dest.equals(""))
-        {
-            Status.setText("Attenzione: Destinatario non accettabile");
-            return;
-        }
-        //recuperare ID
-        int ID = Messaggio.GetLastID();
-        if(ID < 0)
-        {
-            Status.setText("Attenzione: Errore temporaneo durante il salvataggio nel db");
-            return;
-        }
-        //salvare nel db
-        Metodo_Criptaggio method= Metodo_Criptaggio.NESSUNO;
-        switch ((String)MetodoCriptaggio.getSelectedItem())
-        {
-            case "Sostituzione":
-                method= Metodo_Criptaggio.SOSTITUZIONE;
-                break;
-            case "Cifrario di Cesare":
-                method= Metodo_Criptaggio.CIFRARIO_DI_CESARE;
-                break;
-            default:
-                method= Metodo_Criptaggio.NESSUNO;
-                break;
-        }
-        new Messaggio(ID,Testo.getText(),"",  method.name(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
-        Parent.sendMessage("Messaggio inviato con successo");
-        Status.setText("Messaggio Inviato con successo");
-        //chiudere
-        Parent.setVisible(true);
-        Parent.pack();
-        this.dispose();
+//        String Dest = (Database.CheckUtente(Destinatario.getText())) ? Destinatario.getText() : "";
+//        if(Dest.equals(""))
+//        {
+//            Status.setText("Attenzione: Destinatario non accettabile");
+//            return;
+//        }
+//        //recuperare ID
+//        int ID = Messaggio.GetLastID();
+//        if(ID < 0)
+//        {
+//            Status.setText("Attenzione: Errore temporaneo durante il salvataggio nel db");
+//            return;
+//        }
+//        //salvare nel db
+//        Metodo_Criptaggio method= Metodo_Criptaggio.NESSUNO;
+//        switch ((String)MetodoCriptaggio.getSelectedItem())
+//        {
+//            case "Sostituzione":
+//                method= Metodo_Criptaggio.SOSTITUZIONE;
+//                break;
+//            case "Cifrario di Cesare":
+//                method= Metodo_Criptaggio.CIFRARIO_DI_CESARE;
+//                break;
+//            default:
+//                method= Metodo_Criptaggio.NESSUNO;
+//                break;
+//        }
+//        new Messaggio(ID,Testo.getText(),"",  method.name(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
+//        Parent.sendMessage("Messaggio inviato con successo");
+//        Status.setText("Messaggio Inviato con successo");
+//        //chiudere
+//        Parent.setVisible(true);
+//        Parent.pack();
+//        this.dispose();
         
     }//GEN-LAST:event_SendActionPerformed
 

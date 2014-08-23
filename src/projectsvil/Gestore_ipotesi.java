@@ -22,12 +22,13 @@ public class Gestore_ipotesi {
      * sostituisce la lettera e aggiorna la lista
      */
     
-    public void sostituisciLettera(String V, String N){
+    public String sostituisciLettera(String V, String N){
         /*
         if(la coppia non è già presente nellarraylist)
             sostituisci in tutto il messaggio V con N
                     aggiungi V-N ad arraylist 
         */
+        return "";
     }
     
     /**

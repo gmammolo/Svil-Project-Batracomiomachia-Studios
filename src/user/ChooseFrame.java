@@ -6,8 +6,10 @@
 
 package user;
 
+import controller.GuiController;
 import db.Utente;
 import java.util.Timer;
+import javafx.scene.Parent;
 import javax.swing.JFrame;
 import message.TimeMessage;
 
@@ -18,7 +20,7 @@ import message.TimeMessage;
 public class ChooseFrame extends javax.swing.JFrame {
 
     public Utente user;
-    
+    private LoginForm Parent;
     /**
      * Creates new form ChooseFrame
      */
@@ -26,8 +28,9 @@ public class ChooseFrame extends javax.swing.JFrame {
 //        initComponents();
 //    }
 
-    public ChooseFrame(Utente user) {
+    public ChooseFrame(Utente user, LoginForm Parent) {
         this.user=user;
+        this.Parent = Parent;
         initComponents();
         LabelSaluto.setText("Benvenuto "+user.Username);
         TimeMessage trd1 = new TimeMessage(user, StatusMessage);
@@ -152,23 +155,20 @@ public class ChooseFrame extends javax.swing.JFrame {
 
     private void SendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SendMessageActionPerformed
         // TODO add your handling code here:
-        this.setVisible(false);
-        JFrame sendM = new SendMessage(user,this);
-        sendM.setVisible(true);
+        GuiController.GoSendMessage(user, this);
         
         
     }//GEN-LAST:event_SendMessageActionPerformed
 
     private void logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutActionPerformed
         // TODO add your handling code here:
-        Status.setText("OPS, Pare che questo tasto non sia stato implementato in questa versione");
+        GuiController.Logout(Parent, this);
+        Status.setText(GuiController.NotImplementYet());
     }//GEN-LAST:event_logoutActionPerformed
 
     private void ReadMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReadMessageActionPerformed
         // TODO add your handling code here:
-        this.setVisible(false);
-        JFrame readM= new ReadMessages(user,this);
-        readM.setVisible(true);
+        GuiController.GoReadMessage(user, this);
     }//GEN-LAST:event_ReadMessageActionPerformed
 
 
