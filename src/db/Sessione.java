@@ -44,6 +44,12 @@ public class Sessione {
                             ")");       
     }
     
+    /**
+     * Aggiunge una Sessione al Db
+     * @param ID
+     * @param mess
+     * @param userName 
+     */
     public static void AddSessione(int ID, String mess,String userName)
     {
         String[] column= new String[]{ "IDMESS", "USERNAME"};
@@ -52,6 +58,31 @@ public class Sessione {
                                         new DataBaseElement(DataBaseElement.Type.STRING, mess),
                                         new DataBaseElement(DataBaseElement.Type.STRING, userName),
                                     });
+    }
+    
+    /**
+     * Carica la sessione corrente nel db
+     * @deprecated Usare invece Sessione.AddSessione()
+     */
+    public void Insert()
+    {
+        String[] column= new String[]{ "IDMESS", "USERNAME"};
+        Database.Insert("SESSIONE", column, new DataBaseElement[]{
+                                        //new DataBaseElement(DataBaseElement.Type.INT, ID),
+                                        new DataBaseElement(DataBaseElement.Type.STRING, Mess.Id),
+                                        new DataBaseElement(DataBaseElement.Type.STRING, User.Username),
+                                    });
+    }
+    
+    /**
+     * 
+     * @param ID
+     * @param user Utente 
+     * @return Sessione Restituisce la sessione che rispetta i dati richiesti
+     */
+    public static Sessione GetSessioneById(int ID, Utente user)
+    {
+       return Database.GetSessioneById(ID,user);
     }
     
     

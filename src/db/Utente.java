@@ -33,7 +33,9 @@ public class Utente {
         this.Password=Password;
     }
     
-
+    /**
+     * Crea la tabella UTENTE
+     */
     public static void CreateTable()
     {
         Database.CreateTable("create table \"APP\".UTENTE"+
@@ -56,9 +58,20 @@ public class Utente {
                                         new DataBaseElement(Type.STRING, Pass_Chiaro)
                                     });
     }
+    
+     /**
+     * Carica la sessione corrente nel db
+     * @deprecated Usare invece Utente.AddUtente(...)
+     */
+    public void Insert()
+    {
+        String[] column= new String[]{"USERNAME", "PASSWORD"};
+        Database.Insert("Utente", column, new DataBaseElement[]{
+                                        new DataBaseElement(Type.STRING, Username),
+                                        new DataBaseElement(Type.STRING, Password)
+                                    });
+    }
                 
-                
-//                new String[]{User,Pass_Chiaro});
     
     /**
      * Verifica la presenza di messaggi dell' utente
@@ -102,7 +115,14 @@ public class Utente {
         return (Database.CheckUtente(User, Pass_Chiaro) == null) ? false : true;
     }
      
-    
+    /**
+     * Restituisce un utente conoscendo solo il suo nome:
+     * Attenzione: non usarlo per il login, ma solo per avere informazioni secondarie
+     * dell' utente. (in questo caso il db è povero di info e non avendo limiti di sicurezza
+     * si può tranquillamente prendere informazioni più delicate come la password)
+     * @param User
+     * @return 
+     */
     public static Utente GetUtente(String User)
     {
         return Database.CheckUtente(User, null);

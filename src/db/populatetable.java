@@ -8,7 +8,7 @@ package db;
 import java.sql.SQLException;
 import java.sql.Statement;
 /**
- *
+ * @deprecated 
  * @author anna
  */
 public class populatetable {

@@ -69,9 +69,38 @@ public class Messaggio {
         
     }
     
+    
+    /**
+     * Aggiunge un nuovo messaggio al DB ottenuto dalle seguenti info
+     * @param Testo
+     * @param Cifrato
+     * @param CryptMethod
+     * @param Lingua
+     * @param Sender
+     * @param Receiver
+     * @param IsRead
+     * @param metakey 
+     */
+    public static void AddMessaggio(String Testo,String Cifrato, Metodo_Criptaggio CryptMethod, String Lingua, String Sender, String Receiver, boolean  IsRead, String metakey)
+    {
+        String[] column =new String[]{"TESTO","CIFRATO","METODO_CRIPTAGGIO","LINGUA","SENDER","RECEIVER","ISREAD","METAKEY"};
+        Database.Insert("MESSAGGIO",column, new DataBaseElement[]
+                                            {
+                                               // new DataBaseElement(Type.INT, Id),
+                                                new DataBaseElement(Type.STRING, Testo),
+                                                new DataBaseElement(Type.STRING, Cifrato),
+                                                new DataBaseElement(Type.STRING, CryptMethod.name()),
+                                                new DataBaseElement(Type.STRING, Lingua),
+                                                new DataBaseElement(Type.STRING, Sender),
+                                                new DataBaseElement(Type.STRING, Receiver),
+                                                new DataBaseElement(Type.BOOL, String.valueOf(IsRead)),
+                                                new DataBaseElement(Type.STRING, metakey)
+                                            });
+    }
    
     /**
      * Metodo di inserimento nel DB
+     * @deprecated consigliato l'utilizzo di Messaggio.AddMessaggio(...)
      */
     public void Insert()
     {
@@ -91,6 +120,10 @@ public class Messaggio {
                                             });
     }
     
+    /**
+     * Metodo che cifra il messaggio con il metodo scelto.
+     * I risultati verranno salvati nelle variabili interne.
+     */
     public void Cifra()
     {
         if(Informazioni_Cifratura.InfoMethod == null )
@@ -132,11 +165,19 @@ public class Messaggio {
     
     }
     
+    /**
+     * 
+     * @param id
+     * @return Messaggio restituisce il messaggio in base al suo ID
+     */
     public static Messaggio GetMessaggioById(int id)
     {
         return Database.GetMessaggioByID(id);
     }
     
+    /**
+     * Crea la tabella MEssaggio nel DB
+     */
     public static void CreateTable()
     {
         Database.CreateTable("create table \"APP\".MESSAGGIO"+
@@ -153,11 +194,21 @@ public class Messaggio {
     }
     
     
-    
-    public class CifraturaOptions {
+    /**
+     * Classe contenente tutte le informazioni per la cifratura
+     */
+    protected class CifraturaOptions {
         
+        /**
+         * Metodo di Cifratura scelto.
+         * Da qui è possibile accedere a tutte le opzioni necessarie per cifrare
+         * e decifrare il messaggio
+         */
         public CryptSystem InfoMethod;
         
+        /**
+         * Setta InfoMethod a seconda del metodo di cifratura scelto
+         */
         public CifraturaOptions()
         {
             if(CryptMethod ==  Metodo_Criptaggio.CIFRARIO_DI_CESARE)

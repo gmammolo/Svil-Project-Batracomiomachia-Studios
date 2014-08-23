@@ -89,7 +89,12 @@ public class Database {
     }
     
     
-    
+    /**
+     * Metodo Privato per l'inserimento delle tabelle. Genera la stringa delle colonne
+     * per creare una tabella nel db
+     * @param column array di stringhe contenete il nome delle colonne da inserire
+     * @return 
+     */
     private static String GetColumnToString(String[] column)
     {
         if(column == null || column.length == 0)
@@ -105,6 +110,11 @@ public class Database {
         
     }
     
+    /**
+     * Metodo che crea una nuova tabella nel DB
+     * @param sql Stringa della query per creare la tabella
+     * @return true in caso di successo, false in caso negativo 
+     */
     public static boolean CreateTable(String sql)
     {
         try{
@@ -120,7 +130,6 @@ public class Database {
     }
    
   /**
-   * 
    * @return ArrayList&lt;Utente&gt; Ritorna la lista di tutti gli utenti che esistono
    * nel db.
    */  
@@ -211,7 +220,7 @@ public class Database {
    
     
     /**
-     * DEPRECATED: Metodo di verifica dell' esistenza di un utente nel db 
+     * @deprecated : Metodo di verifica dell' esistenza di un utente nel db 
      * @param User
      * @return True: esiste False: non esiste
      */
@@ -258,6 +267,11 @@ public class Database {
         }
     }
     
+    /**
+     * 
+     * @param id Id del messaggio
+     * @return Messaggio il messaggio che corrisponde all' id inserito
+     */
     public static Messaggio GetMessaggioByID(int id)
     {
         try{
@@ -274,6 +288,30 @@ public class Database {
             ex.printStackTrace();
         }
         return null;
+    }
+    
+    /**
+     * 
+     * @param id id della sessione
+     * @param user nome dell' utente
+     * @return Sessione restituisce la sessione con un determinato id che appartiene a un determinato utente (possibilmente collegato)
+     */
+    public static Sessione GetSessioneById(int id, Utente user) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{ 
+          s.execute("SELECT * FROM SESSIONE WHERE ID = "+id+" AND USERNAME= '"+user.Username+" '" );
+          ResultSet rs = s.getResultSet();
+          if(rs.next())
+          {
+              return new Sessione(rs.getInt("ID"),rs.getInt("IDMESS"), rs.getString("USERNAME"));
+          }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            
+        }
+        
+        return null;
+    
     }
     
     /**
@@ -362,7 +400,7 @@ public class Database {
      * Setta un messaggio come letto
      * @param MessageID Id del messaggio
      */
-    static void setReadMessage(int MessageID) {
+    public static void setReadMessage(int MessageID) {
         
         try{ 
           s.execute("UPDATE APP.MESSAGGIO SET \"ISREAD\" = true WHERE ID = "+MessageID);
@@ -370,6 +408,8 @@ public class Database {
             ex.printStackTrace();
         }
     }
+
+
 
     
 }
