@@ -75,10 +75,11 @@ public class Messaggio {
      */
     public void Insert()
     {
+        String[] column =new String[]{"TESTO","CIFRATO","METODO_CRIPTAGGIO","LINGUA","SENDER","RECEIVER","ISREAD","METAKEY"};
         if(Id >= 0)
-            Database.Insert("MESSAGGIO", new DataBaseElement[]
+            Database.Insert("MESSAGGIO",column, new DataBaseElement[]
                                             {
-                                                new DataBaseElement(Type.INT, Id),
+                                               // new DataBaseElement(Type.INT, Id),
                                                 new DataBaseElement(Type.STRING, Testo),
                                                 new DataBaseElement(Type.STRING, Cifrato),
                                                 new DataBaseElement(Type.STRING, CryptMethod.name()),
@@ -92,6 +93,12 @@ public class Messaggio {
     
     public void Cifra()
     {
+        if(Informazioni_Cifratura.InfoMethod == null )
+        {
+            metakey="";
+            Cifrato="";
+            return;
+        }
        metakey =  Informazioni_Cifratura.InfoMethod.GenerateKey();
        Cifrato = Informazioni_Cifratura.InfoMethod.Crypt(Testo);
     }
@@ -124,6 +131,28 @@ public class Messaggio {
         Database.setReadMessage(MessageID);
     
     }
+    
+    public static Messaggio GetMessaggioById(int id)
+    {
+        return Database.GetMessaggioByID(id);
+    }
+    
+    public static void CreateTable()
+    {
+        Database.CreateTable("create table \"APP\".MESSAGGIO"+
+                            "("+
+                                "ID INTEGER not null primary key GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1),"+
+                                "TESTO VARCHAR(250),"+
+                                "CIFRATO VARCHAR(250),"+
+                                "METODO_CRIPTAGGIO VARCHAR(30),"+
+                                "LINGUA VARCHAR(30),"+
+                                "SENDER VARCHAR(32),"+
+                                "RECEIVER VARCHAR(32),"+
+                                "ISREAD BOOLEAN default FALSE not null"+
+                            ")");
+    }
+    
+    
     
     public class CifraturaOptions {
         

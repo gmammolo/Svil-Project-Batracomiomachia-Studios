@@ -68,12 +68,17 @@ public class Database {
      * @param types i valori della tupla
      * @return true in caso di successo, false altrimenti
      */
-    public static boolean Insert(String Table, DataBaseElement[] elements)
+    public static boolean Insert(String Table,String[] column, DataBaseElement[] elements)
     {
+//        INSERT INTO APP.SESSIONE (ID, IDMESS, IDUSER) 
+//	VALUES (1, 1, 'pippo')
+        
         try{
+            String strcolumn=GetColumnToString(column);
+            
             Statement s = conn.createStatement();
-            //System.out.println("INSERT INTO " +Table+ "  VALUES ("+join(value,",","'")+")");
-            s.execute("INSERT INTO " +Table+ "  VALUES ("+join(elements,",","'")+")");
+            System.out.println("INSERT INTO " +Table+" "+strcolumn+ "  VALUES ("+join(elements,",","'")+")");
+            s.execute("INSERT INTO " +Table+" "+strcolumn+ "  VALUES ("+join(elements,",","'")+")");
   
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -83,6 +88,36 @@ public class Database {
         return true;
     }
     
+    
+    
+    private static String GetColumnToString(String[] column)
+    {
+        if(column == null || column.length == 0)
+            return "";
+        String ris="("+column[0];
+        for(int i=1; i< column.length;i++)
+        {
+            ris+=(", ");
+            ris+=column[i];
+        }
+        ris+=") " ;
+        return ris;
+        
+    }
+    
+    public static boolean CreateTable(String sql)
+    {
+        try{
+            Statement s = conn.createStatement();
+            s.execute(sql);
+  
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        
+        return true;
+    }
    
   /**
    * 
@@ -221,6 +256,24 @@ public class Database {
             ex.printStackTrace();
             return -1;
         }
+    }
+    
+    public static Messaggio GetMessaggioByID(int id)
+    {
+        try{
+            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
+            s.execute("SELECT * FROM MESSAGGIO \n" +
+                      "WHERE  ID = " + id );
+            ResultSet rs = s.getResultSet();
+
+            if(rs.next())
+            {
+               return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
     
     /**

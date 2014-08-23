@@ -34,6 +34,15 @@ public class Utente {
     }
     
 
+    public static void CreateTable()
+    {
+        Database.CreateTable("create table \"APP\".UTENTE"+
+                                "("+
+                                    "USERNAME VARCHAR(32) not null primary key,"+
+                                    "PASSWORD VARCHAR(32)"+
+                                ")");      
+    }
+    
     /**
      * Aggiunge un utente al Db
      * @param User
@@ -41,9 +50,10 @@ public class Utente {
      */
     public static void AddUtente(String User, String Pass_Chiaro)
     {
-        Database.Insert("Utente", new DataBaseElement[]{
+        String[] column= new String[]{"USERNAME", "PASSWORD"};
+        Database.Insert("Utente", column, new DataBaseElement[]{
                                         new DataBaseElement(Type.STRING, User),
-                                        new DataBaseElement(Type.STRING, User)
+                                        new DataBaseElement(Type.STRING, Pass_Chiaro)
                                     });
     }
                 
@@ -92,6 +102,12 @@ public class Utente {
         return (Database.CheckUtente(User, Pass_Chiaro) == null) ? false : true;
     }
      
+    
+    public static Utente GetUtente(String User)
+    {
+        return Database.CheckUtente(User, null);
+    }
+    
     
     /**
      * Restituisce l'utente con i dati insetiti
