@@ -133,7 +133,7 @@ public class Messaggio {
             return;
         }
        metakey =  Informazioni_Cifratura.InfoMethod.GenerateKey();
-       Cifrato = Informazioni_Cifratura.InfoMethod.Crypt(Testo);
+       Cifrato = Informazioni_Cifratura.InfoMethod.Crypt(Testo.toLowerCase());
     }
  
     /**

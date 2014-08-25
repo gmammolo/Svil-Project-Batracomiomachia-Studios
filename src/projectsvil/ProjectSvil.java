@@ -6,15 +6,15 @@
 
 package projectsvil;
 
-import view.LoginForm;
-import model.Database;
-import model.Utente;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import model.Database;
+import model.Utente;
+import view.LoginForm;
 
 /**
  *
@@ -27,6 +27,9 @@ public class ProjectSvil {
      */
     public static void main(String[] args){
         // TODO code application logic here
+        
+        //MAIN PROJECT
+        
         Database.Initializate();
         
         
