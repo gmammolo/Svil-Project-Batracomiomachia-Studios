@@ -72,7 +72,7 @@ public class CifrarioSostituzione extends CryptSystem {
     private void GenerateCryptKey()
     {
         String alph = alfabeto;
-        int tmpleng = length;
+        int tmpleng = length-1;
         while(tmpleng > 0)
         {
             Random rand = new Random();

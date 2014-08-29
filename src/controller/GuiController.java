@@ -7,20 +7,25 @@
 package controller;
 
 import cifrario.Metodo_Criptaggio;
-import model.Database;
-import model.Messaggio;
-import model.Utente;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import model.Database;
+import model.Messaggio;
+import model.Sessione;
+import model.Utente;
 import view.ChooseFrame;
+import view.ChooseSession;
 import view.LoginForm;
 import view.ReadMessage;
 import view.ReadMessages;
 import view.SendMessage;
+import view.SessioneGui;
 
 /**
  *
@@ -156,6 +161,64 @@ public class GuiController {
         Parent.pack();
         This.dispose();
         
+    }
+    
+    
+    public static void NewSessionRandom(ChooseSession Parent)
+    {
+        Messaggio m;
+        try {
+            m= Messaggio.GetRandomMessageExluseUser(Parent.User.Username);
+        } catch (Exception ex) {
+            Logger.getLogger(GuiController.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+        
+        JFrame fr=new SessioneGui(new Sessione(0,m,Parent.User));
+        Parent.dispose();
+        fr.setVisible(true);
+    }
+
+    public static void LoadSession(ChooseSession aThis, String text) {
+        int idS;
+        try{
+             idS= Integer.parseInt(text);
+        }
+        catch(NumberFormatException ex)
+        {
+            Logger.getLogger(GuiController.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+        
+        JFrame fr=new SessioneGui(Sessione.LoadSessione(idS));
+        aThis.dispose();
+        fr.setVisible(true);
+    }
+
+    public static void GoDecriptSession(Utente user, ChooseFrame aThis) {
+        aThis.dispose();
+        JFrame fr= new ChooseSession(user);
+        fr.setVisible(true);
+    }
+
+    public static void AddKeyComponent(SessioneGui aThis,String varA , String varB) {
+        char a,b;
+        if(varA.length()==1 )
+            a=varA.charAt(0);
+        else return;
+        if(varB.length()==1)
+            b=varB.charAt(0);
+        else return;
+        if( (a>='a' && a <='z') && (b>='a' && b<='z') )
+        {
+            aThis.Session.addKey(a, b);
+            aThis.UpdateSession(aThis.Session.Key);
+        }
+    }
+
+    public static void SaveSession(SessioneGui aThis, String text) {
+        aThis.Session.Codename=text;
+        aThis.Session.Insert();
     }
     
 

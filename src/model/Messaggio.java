@@ -230,6 +230,17 @@ public class Messaggio {
         }
     }
     
+    
+    public static Messaggio GetRandomMessageExluseUser(String user) throws Exception
+    {
+        
+       Messaggio m =  Database.GetRandomMessageExluseUser(user);
+       if(m == null)
+           throw new Exception("Nessun Messaggio da visualizzare");
+       
+       return m;
+    }
+    
 
 }
 

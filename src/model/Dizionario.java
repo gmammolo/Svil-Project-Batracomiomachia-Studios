@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import model.DataBaseElement.Type;
 
 /**
@@ -17,20 +18,17 @@ import model.DataBaseElement.Type;
  * @author Giuseppe
  */
 public class Dizionario {
-    
-    public Integer ID;
-    public String Parola;
-    
-    public Dizionario(String parola)
+    /*
+     *Derby Wildcard:
+     * % più caratteri
+     * _ un solo carattere
+     */
+
+    public Dizionario()
     {
-        this(0,parola);
+        
     }
     
-    public Dizionario(Integer id, String parola)
-    {
-        ID=id;
-        Parola=parola;
-    }
     public static void AddParola(String Parola)
     {
         String[] column =new String[]{"PAROLA"};
@@ -41,27 +39,26 @@ public class Dizionario {
                                             });
     }
    
-    /**
-     * Metodo di inserimento nel DB
-     * @deprecated consigliato l'utilizzo di Messaggio.AddMessaggio(...)
-     */
-    public void Insert()
-    {
-        String[] column =new String[]{"PAROLA"};
-            Database.Insert("DIZIONARIO",column, new DataBaseElement[]
-                                            {
-                                               // new DataBaseElement(Type.INT, Id),
-                                                new DataBaseElement(Type.STRING, Parola),
-                                            });
-    }
-    
+//    /**
+//     * Metodo di inserimento nel DB
+//     * @deprecated consigliato l'utilizzo di Messaggio.AddMessaggio(...)
+//     */
+//    public void Insert()
+//    {
+//        String[] column =new String[]{"PAROLA"};
+//            Database.Insert("DIZIONARIO",column, new DataBaseElement[]
+//                                            {
+//                                               // new DataBaseElement(Type.INT, Id),
+//                                                new DataBaseElement(Type.STRING, Parola),
+//                                            });
+//    }
+//    
     public static void CreateTable()
     {
 
         Database.CreateTable("create table \"APP\".DIZIONARIO\n" +
                                 "(\n" +
-                                "ID INTEGER not null primary key GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1),"+
-                                "PAROLA VARCHAR(20)\n" +
+                                "PAROLA VARCHAR(30) not null primary key\n" +
                                 ")"
               );
     }
@@ -69,6 +66,8 @@ public class Dizionario {
     
     public static void GenerateFromTxt(String url) throws FileNotFoundException, IOException
     {
+        //C:\Users\Giuseppe\Documents\NetBeansProjects\ProjectSvil\DbTable
+        
         FileReader f = new FileReader(url);
         BufferedReader b =new BufferedReader(f);
         String p="";
@@ -76,5 +75,10 @@ public class Dizionario {
         {
             AddParola(p);
         }
+    }
+    
+    public static ArrayList<String> searchParola(String s)
+    {
+       return Database.searchParola(s);   
     }
 }

@@ -73,7 +73,7 @@ public class LoginForm extends javax.swing.JFrame {
             }
         });
 
-        Password.setText("jPasswordField1");
+        Password.setText("Pass");
 
         StatusMessage.setText("Pronto per il login!");
 

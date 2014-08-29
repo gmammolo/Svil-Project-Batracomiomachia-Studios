@@ -81,6 +81,11 @@ public class ChooseFrame extends javax.swing.JFrame {
         });
 
         DecriptMessage.setText("Decifrare Messaggio");
+        DecriptMessage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DecriptMessageActionPerformed(evt);
+            }
+        });
 
         Status.setText(".");
 
@@ -170,6 +175,11 @@ public class ChooseFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         GuiController.GoReadMessage(user, this);
     }//GEN-LAST:event_ReadMessageActionPerformed
+
+    private void DecriptMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DecriptMessageActionPerformed
+        // TODO add your handling code here:
+        GuiController.GoDecriptSession(user, this);
+    }//GEN-LAST:event_DecriptMessageActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

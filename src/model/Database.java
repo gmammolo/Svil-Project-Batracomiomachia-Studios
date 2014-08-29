@@ -411,6 +411,66 @@ public class Database {
         }
     }
 
+    static ArrayList searchParola(String parola) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       ArrayList<String> list= new  ArrayList<String>();
+        try{
+            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
+            s.execute("SELECT * FROM DIZIONARIO \n" +
+                      "WHERE  PAROLA LIKE '"+parola+"'");
+            ResultSet rs = s.getResultSet();
+
+            while(rs.next())
+            {
+                list.add(rs.getString("PAROLA"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    
+    }
+
+    public static Messaggio GetRandomMessageExluseUser(String user) {
+       try{
+            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
+            s.execute(  "select * from MESSAGGIO  \n" +
+                        "WHERE \n" +
+                        "SENDER != '"+user+"' AND\n" +
+                        "RECEIVER != '"+user+"'\n" +
+                        "ORDER BY RANDOM()");
+            s.setMaxRows(1);
+            ResultSet rs = s.getResultSet();
+            
+            if(rs.next())
+            {
+               return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+       
+       return null;
+    }
+
+    static Sessione LoadSessione(int id) {
+        try{
+            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
+            s.execute(  "SELECT * FROM SESSIONE WHERE ID = "+id);
+            s.setMaxRows(1);
+            ResultSet rs = s.getResultSet();
+            
+            if(rs.next())
+            {
+               return new Sessione(rs.getInt("ID"), rs.getInt("IDMESS"), rs.getString("USERNAME"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+       
+       return null;
+    }
+
 
 
     
