@@ -17,6 +17,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import model.AlberoIpotesi;
+import model.AlberoIpotesi.NodeIpotesi;
 import model.Database;
 import model.Dizionario;
 import model.Messaggio;
@@ -204,11 +206,9 @@ public class GuiController {
         if(varB.length()==1)
             b=varB.charAt(0);
         else return;
-        if( (a>='a' && a <='z') && (b>='a' && b<='z') )
-        {
-            aThis.Session.addKey(a, b);
-            aThis.UpdateSession(aThis.Session.Key);
-        }
+        aThis.Session.Albero.AddNewNode(a, b);
+        GestoreIpotesi.SostituisciLettera(aThis.Session,a,b);
+        aThis.UpdateSession(aThis.Session.Key);
     }
 
     public static void SaveSession(SessioneGui aThis, String text) {
@@ -228,7 +228,7 @@ public class GuiController {
     }
 
     public static ArrayList<String> SearchParola(String text) {
-       return Dizionario.searchParola(text);
+       return SupportSystem.chiediParola(text);
     }
 
     public static void AccettaVocabolo(DizionarioGui aThis, String old, String find) {

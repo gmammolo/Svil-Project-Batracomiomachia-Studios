@@ -6,8 +6,11 @@
 
 package view;
 
+import controller.GestoreIpotesi;
+import controller.GestoreSessione;
 import controller.GuiController;
 import java.util.Map;
+import model.AlberoIpotesi;
 import model.Sessione;
 
 /**
@@ -202,8 +205,8 @@ public class SessioneGui extends javax.swing.JFrame {
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel6)
                         .addComponent(sostiuisci)
                         .addComponent(b, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -240,7 +243,7 @@ public class SessioneGui extends javax.swing.JFrame {
 
     private void UndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UndoActionPerformed
         // TODO add your handling code here:
-        
+        GestoreIpotesi.Undo();
     }//GEN-LAST:event_UndoActionPerformed
 
     /**

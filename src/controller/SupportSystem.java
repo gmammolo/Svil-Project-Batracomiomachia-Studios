@@ -16,6 +16,16 @@ import model.Dizionario;
  */
 public class SupportSystem {
     
+    
+    /**
+     * Manda una parola automaticamente al Dizionario Italiano
+     * @param parola 
+     */
+    public static void inviaParola(String parola)
+    {
+        Dizionario.AddParola(parola);
+    }
+    
     /**
      * 
      * @param parola
@@ -26,18 +36,23 @@ public class SupportSystem {
         Dizionario.AddParola(parola);
     }
     
+    /**
+     * Cerca una parola nel dizionario
+     * @param parola
+     * @return 
+     */
     public static ArrayList<String> chiediParola(String parola)
     {
-        String par="";
-        for(int i=0;i<parola.length();i++)
-        {
-            char a= parola.charAt(i);
-            if(a>='A' && a<='Z' )
-                par+="_";
-            else
-                par+=a;
-        }
+       
+      String ris="";
+       for(int i=0; i< parola.length(); i++)
+       {
+           if(parola.charAt(i) >= 'A' && parola.charAt(i) <= 'Z')
+               ris+=parola.charAt(i);
+           else
+               ris+='_';
+       }
         
-        return Dizionario.searchParola(par);
+        return Dizionario.searchParola(ris);
     }
 }

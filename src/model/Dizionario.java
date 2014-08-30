@@ -80,15 +80,8 @@ public class Dizionario {
     public static ArrayList<String> searchParola(String s)
     {
        //trasforma la parola
-       String ris="";
-       for(int i=0; i< s.length(); i++)
-       {
-           if(s.charAt(i) >= 'A' && s.charAt(i) <= 'Z')
-               ris+=s.charAt(i);
-           else
-               ris+='_';
-       }
+
        
-       return Database.searchParola(ris);   
+       return Database.searchParola(s);   
     }
 }

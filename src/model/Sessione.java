@@ -22,6 +22,7 @@ public class Sessione {
     public String Codename;
     public String MetaKey;
     public Map Key;
+    public AlberoIpotesi Albero;
     
     public Sessione(int id, int messId, String userName)
     {
@@ -40,6 +41,7 @@ public class Sessione {
         Mess=mess;
         User=user;
         Key = new Hashtable();
+        Albero=new AlberoIpotesi();
     }
     
     public static void CreateTable()
