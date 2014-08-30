@@ -415,7 +415,8 @@ public class Database {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
        ArrayList<String> list= new  ArrayList<String>();
         try{
-            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
+//            System.out.println("SELECT * FROM DIZIONARIO \n" +
+//                      "WHERE  PAROLA LIKE '"+parola+"'"); //non so perchè vuole 1 anzichè column  
             s.execute("SELECT * FROM DIZIONARIO \n" +
                       "WHERE  PAROLA LIKE '"+parola+"'");
             ResultSet rs = s.getResultSet();
@@ -439,7 +440,7 @@ public class Database {
                         "SENDER != '"+user+"' AND\n" +
                         "RECEIVER != '"+user+"'\n" +
                         "ORDER BY RANDOM()");
-            s.setMaxRows(1);
+            //s.setMaxRows(1);
             ResultSet rs = s.getResultSet();
             
             if(rs.next())
@@ -453,11 +454,13 @@ public class Database {
        return null;
     }
 
-    static Sessione LoadSessione(int id) {
+    static Sessione LoadSessione(String Codename, String User) {
         try{
             //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
-            s.execute(  "SELECT * FROM SESSIONE WHERE ID = "+id);
-            s.setMaxRows(1);
+            System.out.println( "SELECT * FROM SESSIONE WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
+            s.execute(  "SELECT * FROM SESSIONE WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'"+
+            "FETCH FIRST 1 ROWS ONLY");
+//            s.setMaxRows(1); //Attenzione: questo valore rimane attivo. se si usa quessto metodo va poi resettato
             ResultSet rs = s.getResultSet();
             
             if(rs.next())

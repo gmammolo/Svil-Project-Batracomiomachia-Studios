@@ -103,8 +103,8 @@ public class Sessione {
     }
     
     
-    public static Sessione LoadSessione(int id) {
-        return Database.LoadSessione(id);
+    public static Sessione LoadSessione(String Codename, String User) {
+        return Database.LoadSessione(Codename,User);
     }
     
     

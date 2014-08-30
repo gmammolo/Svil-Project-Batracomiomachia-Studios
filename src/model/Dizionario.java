@@ -73,12 +73,22 @@ public class Dizionario {
         String p="";
         while(( p = b.readLine()) != null)
         {
-            AddParola(p);
+            AddParola(p.toUpperCase());
         }
     }
     
     public static ArrayList<String> searchParola(String s)
     {
-       return Database.searchParola(s);   
+       //trasforma la parola
+       String ris="";
+       for(int i=0; i< s.length(); i++)
+       {
+           if(s.charAt(i) >= 'A' && s.charAt(i) <= 'Z')
+               ris+=s.charAt(i);
+           else
+               ris+='_';
+       }
+       
+       return Database.searchParola(ris);   
     }
 }

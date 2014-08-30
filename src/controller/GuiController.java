@@ -7,6 +7,7 @@
 package controller;
 
 import cifrario.Metodo_Criptaggio;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
@@ -15,12 +16,15 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import model.Database;
+import model.Dizionario;
 import model.Messaggio;
 import model.Sessione;
 import model.Utente;
 import view.ChooseFrame;
 import view.ChooseSession;
+import view.DizionarioGui;
 import view.LoginForm;
 import view.ReadMessage;
 import view.ReadMessages;
@@ -179,18 +183,9 @@ public class GuiController {
         fr.setVisible(true);
     }
 
-    public static void LoadSession(ChooseSession aThis, String text) {
-        int idS;
-        try{
-             idS= Integer.parseInt(text);
-        }
-        catch(NumberFormatException ex)
-        {
-            Logger.getLogger(GuiController.class.getName()).log(Level.SEVERE, null, ex);
-            return;
-        }
-        
-        JFrame fr=new SessioneGui(Sessione.LoadSessione(idS));
+    public static void LoadSession(ChooseSession aThis, String Codename) {
+       
+        JFrame fr=new SessioneGui(Sessione.LoadSessione(Codename,aThis.User.Username));
         aThis.dispose();
         fr.setVisible(true);
     }
@@ -219,6 +214,38 @@ public class GuiController {
     public static void SaveSession(SessioneGui aThis, String text) {
         aThis.Session.Codename=text;
         aThis.Session.Insert();
+    }
+
+    public static void OpenDizionario(SessioneGui aThis, JTextPane Cifrato) {
+       
+        String s="";
+        if (Cifrato.getSelectedText() != null){ 
+            s = Cifrato.getSelectedText();
+        }
+        aThis.setVisible(false);
+        JFrame fr=new DizionarioGui(aThis,s);
+        fr.setVisible(true);
+    }
+
+    public static ArrayList<String> SearchParola(String text) {
+       return Dizionario.searchParola(text);
+    }
+
+    public static void AccettaVocabolo(DizionarioGui aThis, String old, String find) {
+       SessioneGui Parent= aThis.Parent;
+       for(int i=0;i<old.length();i++)
+       {
+           char a=old.charAt(i);
+           char b=find.charAt(i);
+           if(a >= 'a' && a <= 'z')
+           {
+               Parent.Session.addKey(a, b);
+           }
+       }
+       Parent.UpdateSession(Parent.Session.Key);
+       Parent.setVisible(true);
+       aThis.dispose();
+       
     }
     
 

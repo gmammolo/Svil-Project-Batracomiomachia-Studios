@@ -69,24 +69,53 @@ public class CifrarioSostituzione extends CryptSystem {
     }
     
     
+    /**
+    * Returns a pseudo-random number between min and max, inclusive.
+    * The difference between min and max can be at most
+    * <code>Integer.MAX_VALUE - 1</code>.
+    *
+    * @param min Minimum value
+    * @param max Maximum value.  Must be greater than min.
+    * @return Integer between min and max, inclusive.
+    * @see java.util.Random#nextInt(int)
+    */
+   private static int randInt(int min, int max) {
+
+       // NOTE: Usually this should be a field rather than a method
+       // variable so that it is not re-seeded every call.
+       Random rand = new Random();
+
+       // nextInt is normally exclusive of the top value,
+       // so add 1 to make it inclusive
+       int randomNum = rand.nextInt((max - min) + 1) + min;
+
+       return randomNum;
+   }
+    
     private void GenerateCryptKey()
     {
         String alph = alfabeto;
         int tmpleng = length-1;
-        while(tmpleng > 0)
+//        if(tmpleng % 2 != 0)
+//        {
+//            KeyCrypt.put(alph.charAt(tmpleng), alph.charAt(tmpleng));
+//            KeyDecrypt.put(alph.charAt(tmpleng), alph.charAt(tmpleng));
+//            tmpleng--;
+//        }
+        for(int i=0;i<length;i++)
         {
-            Random rand = new Random();
-            int randomKey = rand.nextInt(tmpleng +1);
-            int randomValue = rand.nextInt(tmpleng +1);
+            int randomValue = randInt(0,tmpleng);
             //genera chiave
-            KeyCrypt.put(alph.charAt(randomKey), alph.charAt(randomValue));
-            KeyDecrypt.put(alph.charAt(randomValue), alph.charAt(randomKey));
-            
+            KeyCrypt.put(alfabeto.charAt(i), alph.charAt(randomValue));
+            KeyDecrypt.put(alph.charAt(randomValue), alfabeto.charAt(i));
+//            char tmp= alph.charAt(randomValue);
             //sposta a fine stringa e riduce array
-            alph= alph.replace(alph.charAt(randomKey), alph.charAt(tmpleng-1));
+            alph= alph.replace(alph.charAt(randomValue),alph.charAt(tmpleng));
             tmpleng--;
+//            System.out.println("PRENDO "+tmp+" QUINDI RIMANE "+alph.substring(0,tmpleng));
             
         }
+
     }
     
     public String Serialize()

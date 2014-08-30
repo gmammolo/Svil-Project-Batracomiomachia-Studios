@@ -40,6 +40,9 @@ public class ProjectSvil {
         
         Database.Initializate();
         
+        
+        
+        
 //   Metodi da scommentare solo alla configurazione (Primo avvio)
 //        createTable();
 //        createUser();
