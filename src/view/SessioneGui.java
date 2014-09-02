@@ -11,6 +11,7 @@ import controller.GestoreSessione;
 import controller.GuiController;
 import java.util.Map;
 import model.AlberoIpotesi;
+import model.ListaIpotesi;
 import model.Sessione;
 
 /**
@@ -243,7 +244,7 @@ public class SessioneGui extends javax.swing.JFrame {
 
     private void UndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UndoActionPerformed
         // TODO add your handling code here:
-        GestoreIpotesi.Undo();
+        GestoreIpotesi.Undo(Session);
     }//GEN-LAST:event_UndoActionPerformed
 
     /**
@@ -258,15 +259,9 @@ public class SessioneGui extends javax.swing.JFrame {
         };
     }
     
-    public void UpdateSession(Map m)
+    public void UpdateSession(ListaIpotesi ipotesi)
     {
-        String newMappa="";
-        for (Object key : m.keySet())
-        {
-            newMappa+=String.valueOf(key)+" => "+String.valueOf(m.get(key))+"\n";
-            Cifrato.setText(Cifrato.getText().replace(String.valueOf(key), String.valueOf(m.get(key))));
-        }
-        Storico.setText(newMappa);
+        Storico.setText(ipotesi.toString());
         CheckResult();
     }
 

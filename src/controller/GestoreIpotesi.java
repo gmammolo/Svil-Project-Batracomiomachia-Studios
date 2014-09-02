@@ -14,8 +14,9 @@ import model.Sessione;
  */
 public class GestoreIpotesi {
     
-    public static void Undo()
-    {
+    public static void Undo(Sessione session)
+    {  
+        session.Undo();
         
     }
     

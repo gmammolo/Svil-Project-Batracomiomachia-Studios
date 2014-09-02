@@ -21,8 +21,9 @@ public class Sessione {
     public Utente User;
     public String Codename;
     public String MetaKey;
-    public Map Key;
-    public AlberoIpotesi Albero;
+//    public Map Key;
+    public ListaIpotesi Ipotesi;
+    public AlberoIpotesi Storico;
     
     public Sessione(int id, int messId, String userName)
     {
@@ -40,8 +41,9 @@ public class Sessione {
         Id=id;
         Mess=mess;
         User=user;
-        Key = new Hashtable();
-        Albero=new AlberoIpotesi();
+//        Key = new Hashtable();
+        Ipotesi = new ListaIpotesi();
+        Storico = new AlberoIpotesi();
     }
     
     public static void CreateTable()
@@ -112,30 +114,43 @@ public class Sessione {
     
     public void addKey(char a, char b)
     {
-        Key.put(a, String.valueOf(b).toUpperCase());
+//        Key.put(a, String.valueOf(b).toUpperCase());
+        Ipotesi.AddNewNode(a, b);
+        Storico.AddNewNode(a, b);
     }
     
     
     public String Serialize()
     {
         String result="";
-        for (Object key : Key.keySet())
-        {
-            result+=String.valueOf(key)+String.valueOf(Key.get(key));
-        }
-        return result;
+//        for (Object key : Key.keySet())
+//        {
+//            result+=String.valueOf(key)+String.valueOf(Key.get(key));
+//        }
+        
+        return Ipotesi.Serialize();
     }
     
     public void Deserialize(String metakey)         
     {
-        Key = new Hashtable();
         
-        for(int i=0; i< metakey.length(); i+=2)
-        {
-            int j=i+1;
-            Key.put(j, i);
-        }
+        Ipotesi.Deserialize(metakey);
+//        Key = new Hashtable();
+//        
+//        for(int i=0; i< metakey.length(); i+=2)
+//        {
+//            int j=i+1;
+//            Key.put(j, i);
+//        }
         
+        
+    }
+    
+    
+    public void Undo()
+    {
+        Ipotesi.RemoveLastNode();
+        Storico.Undo();        
     }
     
 }

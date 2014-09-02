@@ -46,41 +46,10 @@ public class AlberoIpotesi {
      {
          
      }
-    
-    public class NodeIpotesi
-    {
-        protected char a;
-        protected char b;
-        
-        protected NodeIpotesi parent;
-        protected ArrayList<NodeIpotesi> son;
-        
-        
-        public NodeIpotesi(char a, char b)
-        {
-            this.a=a;
-            this.b=b;
-            son=new ArrayList<NodeIpotesi>();
-        }
-        
-        public NodeIpotesi(String value)
-        {
-            this.a=value.charAt(0);
-            this.b=value.charAt(value.length()-1);
-            son=new ArrayList<NodeIpotesi>();
-        }
-        
-        public void addNode(NodeIpotesi node)
-        {
-            node.parent = this;
-            son.add(node);
-        }
-        
 
-        public String toString()
-        {
-            return a+" => "+b;
-        }
+    void Undo() {
+       index = index.parent;
     }
+   
             
 }

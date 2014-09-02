@@ -18,7 +18,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import model.AlberoIpotesi;
-import model.AlberoIpotesi.NodeIpotesi;
 import model.Database;
 import model.Dizionario;
 import model.Messaggio;
@@ -206,9 +205,9 @@ public class GuiController {
         if(varB.length()==1)
             b=varB.charAt(0);
         else return;
-        aThis.Session.Albero.AddNewNode(a, b);
+        aThis.Session.Storico.AddNewNode(a, b);
         GestoreIpotesi.SostituisciLettera(aThis.Session,a,b);
-        aThis.UpdateSession(aThis.Session.Key);
+        aThis.UpdateSession(aThis.Session.Ipotesi);
     }
 
     public static void SaveSession(SessioneGui aThis, String text) {
@@ -242,7 +241,7 @@ public class GuiController {
                Parent.Session.addKey(a, b);
            }
        }
-       Parent.UpdateSession(Parent.Session.Key);
+       Parent.UpdateSession(Parent.Session.Ipotesi);
        Parent.setVisible(true);
        aThis.dispose();
        
