@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * @author Giuseppe
  */
 public class AlberoIpotesi {
-    
+  
     protected NodeIpotesi root;
     protected NodeIpotesi index;
     
@@ -47,9 +47,42 @@ public class AlberoIpotesi {
          
      }
 
-    void Undo() {
-       index = index.parent;
+    public void Undo() {
+        if(index!= null && index.parent!= null)
+            index = index.parent;
+    }
+
+    public String Serialize() {
+        return root.Serialize();
     }
    
-            
+    public void Deserialize(String text)
+    {
+        root=root.Deserialize(text);
+        NodeIpotesi  n = root;
+        while(n.son.size()> 0 )
+            n =  n.son.get(n.son.size()-1);
+        index = n ;
+    }
+       
+    
+    
+    public ListaIpotesi GetLista()
+    {
+        ListaIpotesi lista=new ListaIpotesi();
+        NodeIpotesi node=index;
+        while(node.a != ' ')
+        {
+            lista.AddNode(NodeIpotesi.Clone(node));
+            node = node.parent;
+        }
+        
+        return lista;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return root.toStringNode();
+    }
 }

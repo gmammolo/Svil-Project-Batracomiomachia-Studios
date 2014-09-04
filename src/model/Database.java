@@ -305,7 +305,7 @@ public class Database {
           ResultSet rs = s.getResultSet();
           if(rs.next())
           {
-              return new Sessione(rs.getInt("ID"),rs.getInt("IDMESS"), rs.getString("USERNAME"));
+              return new Sessione(rs.getInt("ID"),rs.getInt("IDMESS"), rs.getString("USERNAME"), rs.getString("METAKEY"));
           }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -465,13 +465,41 @@ public class Database {
             
             if(rs.next())
             {
-               return new Sessione(rs.getInt("ID"), rs.getInt("IDMESS"), rs.getString("USERNAME"));
+               return new Sessione(rs.getInt("ID"), rs.getInt("IDMESS"), rs.getString("USERNAME"),rs.getString("METAKEY"));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
        
        return null;
+    }
+
+    static boolean CheckSession(String Codename, String User) {
+        try{
+            System.out.println( "SELECT * FROM SESSIONE WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
+            s.execute(  "SELECT * FROM SESSIONE WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
+//            s.setMaxRows(1); //Attenzione: questo valore rimane attivo. se si usa quessto metodo va poi resettato
+            ResultSet rs = s.getResultSet();
+            
+            if(rs.next())
+            {
+               return true;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    static void UpdateSession(String Codename, String User, String Metakey) {
+        try{
+            System.out.println("UPDATE SESSIONE SET METAKEY = '"+Metakey+"'"
+                    + "WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
+            s.execute("UPDATE SESSIONE SET METAKEY = '"+Metakey+"'"
+                    + "WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
 

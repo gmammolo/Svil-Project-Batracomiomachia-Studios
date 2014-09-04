@@ -27,8 +27,8 @@ public class SessioneGui extends javax.swing.JFrame {
      */
     public SessioneGui(Sessione session) {
         Session=session;
-        
         initComponents();
+        UpdateSession(session.Ipotesi);
     }
 
     /**
@@ -245,6 +245,7 @@ public class SessioneGui extends javax.swing.JFrame {
     private void UndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UndoActionPerformed
         // TODO add your handling code here:
         GestoreIpotesi.Undo(Session);
+        UpdateSession(Session.Ipotesi);
     }//GEN-LAST:event_UndoActionPerformed
 
     /**
@@ -256,12 +257,14 @@ public class SessioneGui extends javax.swing.JFrame {
         if( Session.Mess.Testo.toLowerCase().equals(Cifrato.getText().toLowerCase()))
         {
             System.out.println("MESSAGGIO TROVATO");
-        };
+        }
     }
     
     public void UpdateSession(ListaIpotesi ipotesi)
     {
         Storico.setText(ipotesi.toString());
+        String s= GestoreIpotesi.UpdateText(Session);
+        Cifrato.setText(s);
         CheckResult();
     }
 

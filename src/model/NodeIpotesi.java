@@ -24,7 +24,7 @@ public class NodeIpotesi
     public NodeIpotesi(char a, char b)
     {
         this.a=a;
-        this.b=b;
+        this.b=String.valueOf(b).toUpperCase().charAt(0);
         son=new ArrayList<NodeIpotesi>();
     }
 
@@ -41,18 +41,30 @@ public class NodeIpotesi
         son.add(node);
     }
 
-
+    @Override
     public String toString()
     {
         return a+" => "+b;
     }
 
+    
+    public String toStringNode()
+    {
+        String ris=toString();
+        for(int i=0;i<son.size();i++)
+        {
+            ris+="\t"+son.get(i).toStringNode();
+        }
+        ris+="\n";
+        return ris;
+    }
+    
     /**
      * Solo per Lista ipotesi
      * @return 
      */
     public boolean Next() {
-        return (son == null) ? false : true;
+        return (son == null || son.size() == 0) ? false : true;
     }
     
     public NodeIpotesi GetNext()
@@ -61,4 +73,38 @@ public class NodeIpotesi
             return null;
         return son.get(son.size()-1);
     }
+    
+    public String Serialize()
+    {
+        String ris=toString()+String.valueOf(son.size())+";";
+        for(int i=0; i<son.size();i++)
+        {
+            if(son.size()>i && son.get(i)!=null)
+                ris+=son.get(i).Serialize();
+        } 
+        return ris;  
+    }
+    
+    public NodeIpotesi Deserialize(String text)
+    {
+        if(text.length()<7)
+            return new NodeIpotesi(' ',' ');
+        NodeIpotesi n=new NodeIpotesi(text.substring(0,6));
+        Integer element=Integer.parseInt(text.substring(6,  text.indexOf(";")));     
+        for(int i=0; i<element; i++)
+        {
+            text = text.substring( String.valueOf( element ).length() + 7 ) ;
+            n.son.add(n.Deserialize( text ));
+            n.son.get(i).parent = n;
+        }
+        
+        return n;
+        
+    }
+    
+    public static NodeIpotesi Clone(NodeIpotesi Node)
+    {
+        return new NodeIpotesi(Node.a,Node.b);
+    }
+   
 }

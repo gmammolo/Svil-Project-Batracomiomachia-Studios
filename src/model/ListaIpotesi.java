@@ -28,9 +28,20 @@ public class ListaIpotesi {
     
     public  void AddNode(NodeIpotesi Nodo)
     {    
-        Nodo.parent=root;
-        root.addNode(Nodo);
-        root = Nodo;
+        //Nodo.parent=root;
+        NodeIpotesi index=root;
+        while(index.son.size()>0)
+        {
+            index = index.son.get(0);
+            if(index.a == Nodo.a)
+            {
+                index.b=Nodo.b;
+                return;             
+            }
+        }
+        
+        index.addNode(Nodo);
+        //root = Nodo;
     }
 
     public String Serialize() {
@@ -52,11 +63,13 @@ public class ListaIpotesi {
     @Override
     public String toString()
     {
-                NodeIpotesi n=root;
+        NodeIpotesi n=root;
         String ris = "";
         while(n.Next())
         {
-            ris+=n.GetNext().toString()+"\n";
+            n=n.GetNext();
+            ris+=n.toString()+"\n";
+            
         }
         
         return ris;
@@ -85,11 +98,28 @@ public class ListaIpotesi {
         NodeIpotesi n=root;
         while(n!= null && n.Next())
         {
-           n=n.GetNext();
-           if(!n.Next())
-               n=null;
+            if(!n.GetNext().Next())
+            {
+                n.son.remove(n.GetNext());
+            }
+            n=n.GetNext();
+//            if(!n.Next())
+//                n=null;
         }
     }
     
+    
+    public String GetTextIpotesi( String Text)
+    {
+        NodeIpotesi n=root;
+        while(n.Next())
+        {
+            n=n.GetNext();
+            Text = Text.replace(n.a,n.b);            
+        }
+        
+        return Text;
+        
+    }
     
 }

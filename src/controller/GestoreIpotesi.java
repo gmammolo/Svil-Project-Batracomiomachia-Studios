@@ -23,10 +23,17 @@ public class GestoreIpotesi {
     public static void SostituisciLettera(Sessione session, char a, char b)
     {
 
-        if( (a>='a' && a <='z') && (b>='a' && b<='z') )
+        if( (a>='a' && a <='z') && (b>='a' && b<='z' || b>='A' && b<='Z') )
         {
             session.addKey(a, b);
         }
+    }
+    
+    
+    public static String UpdateText(Sessione session)
+    {
+        return session.GetTextIpotesi();
+            
     }
     
     

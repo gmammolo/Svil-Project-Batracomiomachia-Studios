@@ -205,14 +205,17 @@ public class GuiController {
         if(varB.length()==1)
             b=varB.charAt(0);
         else return;
-        aThis.Session.Storico.AddNewNode(a, b);
+        //aThis.Session.Storico.AddNewNode(a, b);
         GestoreIpotesi.SostituisciLettera(aThis.Session,a,b);
         aThis.UpdateSession(aThis.Session.Ipotesi);
     }
 
     public static void SaveSession(SessioneGui aThis, String text) {
         aThis.Session.Codename=text;
-        aThis.Session.Insert();
+        if(aThis.Session.CheckSession())
+            aThis.Session.Update();
+        else
+            aThis.Session.Insert();
     }
 
     public static void OpenDizionario(SessioneGui aThis, JTextPane Cifrato) {

@@ -15,8 +15,10 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import model.AlberoIpotesi;
 import model.Database;
 import model.Dizionario;
+import model.ListaIpotesi;
 import model.Messaggio;
 import model.Sessione;
 import model.Utente;
@@ -39,6 +41,7 @@ public class ProjectSvil {
         
         
         Database.Initializate();
+        
         
         
         

@@ -27,23 +27,41 @@ public class Sessione {
     
     public Sessione(int id, int messId, String userName)
     {
-        this(id, Messaggio.GetMessaggioById(messId),Utente.GetUtente(userName));
+        this(id, Messaggio.GetMessaggioById(messId),Utente.GetUtente(userName) , "");
+    }
+    
+    public Sessione(int id, int messId, String userName, String metakey)
+    {
+        this(id, Messaggio.GetMessaggioById(messId),Utente.GetUtente(userName) , metakey);
     }
     
     public Sessione(int id, int messId, Utente user)
     {
-        this(id, Messaggio.GetMessaggioById(messId),user);
+        this(id, Messaggio.GetMessaggioById(messId),user , "");
     }
     
+    public Sessione(int id, int messId, Utente user, String metakey)
+    {
+        this(id, Messaggio.GetMessaggioById(messId),user , metakey);
+    }
     
     public Sessione(int id, Messaggio mess, Utente user)
+    {
+        this(id,mess,user,"");
+    }
+    
+    public Sessione(int id, Messaggio mess, Utente user, String metakey)
     {
         Id=id;
         Mess=mess;
         User=user;
-//        Key = new Hashtable();
+        MetaKey = metakey;
         Ipotesi = new ListaIpotesi();
         Storico = new AlberoIpotesi();
+        
+        Storico.Deserialize(MetaKey);
+        System.out.println(Storico.toString());
+        Ipotesi = Storico.GetLista();
     }
     
     public static void CreateTable()
@@ -85,7 +103,7 @@ public class Sessione {
      */
     public void Insert()
     {
-        String[] column= new String[]{ "IDMESS", "USERNAME","CODENAME","METAKEY"};
+        String[] column= new String[]{ "IDMESS", "USERNAME","CODENAME", "METAKEY"};
         Database.Insert("SESSIONE", column, new DataBaseElement[]{
                                         //new DataBaseElement(DataBaseElement.Type.INT, ID),
                                         new DataBaseElement(DataBaseElement.Type.INT, Mess.Id),
@@ -122,28 +140,16 @@ public class Sessione {
     
     public String Serialize()
     {
-        String result="";
-//        for (Object key : Key.keySet())
-//        {
-//            result+=String.valueOf(key)+String.valueOf(Key.get(key));
-//        }
         
-        return Ipotesi.Serialize();
+        return Storico.Serialize();    
+//      return Ipotesi.Serialize();
     }
     
     public void Deserialize(String metakey)         
     {
-        
-        Ipotesi.Deserialize(metakey);
-//        Key = new Hashtable();
-//        
-//        for(int i=0; i< metakey.length(); i+=2)
-//        {
-//            int j=i+1;
-//            Key.put(j, i);
-//        }
-        
-        
+        Storico.Deserialize(metakey);
+        Ipotesi = Storico.GetLista();
+ 
     }
     
     
@@ -151,6 +157,21 @@ public class Sessione {
     {
         Ipotesi.RemoveLastNode();
         Storico.Undo();        
+    }
+    
+    public String GetTextIpotesi()
+    {
+        return this.Ipotesi.GetTextIpotesi(Mess.Cifrato);
+    }
+
+
+    public boolean CheckSession() {
+       return Database.CheckSession(Codename,User.Username);
+    }
+
+    public void Update() {
+        MetaKey=Storico.Serialize();
+        Database.UpdateSession(Codename,User.Username,MetaKey);
     }
     
 }
