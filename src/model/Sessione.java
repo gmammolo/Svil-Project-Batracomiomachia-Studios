@@ -6,8 +6,14 @@
 
 package model;
 
-import java.util.Hashtable;
-import java.util.Map;
+
+import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static model.Database.conn;
 
 /**
  *
@@ -20,59 +26,69 @@ public class Sessione {
     public Messaggio Mess;
     public Utente User;
     public String Codename;
-    public String MetaKey;
+    //public Blob MetaKey;
 //    public Map Key;
     public ListaIpotesi Ipotesi;
     public AlberoIpotesi Storico;
     
     public Sessione(int id, int messId, String userName)
     {
-        this(id, Messaggio.GetMessaggioById(messId),Utente.GetUtente(userName) , "");
+        this(id, Messaggio.GetMessaggioById(messId),Utente.GetUtente(userName) , null);
     }
     
-    public Sessione(int id, int messId, String userName, String metakey)
+    public Sessione(int id, int messId, String userName, Object Albero)
     {
-        this(id, Messaggio.GetMessaggioById(messId),Utente.GetUtente(userName) , metakey);
+        this(id, Messaggio.GetMessaggioById(messId),Utente.GetUtente(userName) , Albero);
     }
     
     public Sessione(int id, int messId, Utente user)
     {
-        this(id, Messaggio.GetMessaggioById(messId),user , "");
+        this(id, Messaggio.GetMessaggioById(messId),user , null);
     }
     
-    public Sessione(int id, int messId, Utente user, String metakey)
+    public Sessione(int id, int messId, Utente user, Object Albero)
     {
-        this(id, Messaggio.GetMessaggioById(messId),user , metakey);
+        this(id, Messaggio.GetMessaggioById(messId),user , Albero);
     }
     
     public Sessione(int id, Messaggio mess, Utente user)
     {
-        this(id,mess,user,"");
+        this(id,mess,user,null);
     }
     
-    public Sessione(int id, Messaggio mess, Utente user, String metakey)
+    public Sessione(int id, Messaggio mess, Utente user, Object Albero)
     {
         Id=id;
         Mess=mess;
         User=user;
-        MetaKey = metakey;
         Ipotesi = new ListaIpotesi();
         Storico = new AlberoIpotesi();
-        
-        Storico.Deserialize(MetaKey);
+        try {
+            if(Albero!=null)
+            {
+                Storico=(AlberoIpotesi)Database.deserialize((byte[])Albero);
+                            Ipotesi = Storico.GetLista();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Sessione.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Sessione.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         System.out.println(Storico.toString());
         Ipotesi = Storico.GetLista();
     }
     
     public static void CreateTable()
     {
-        Database.CreateTable("create table \"APP\".SESSIONE\n" +
+        Database.CreateTable("create table IF NOT EXISTS SESSIONE\n" +
                             "(\n" +
-                            "	ID INTEGER not null primary key GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1),\n" +
+                            "	ID INTEGER not null AUTO_INCREMENT,\n" +
                             "	IDMESS INTEGER,\n" +
                             "	IDUSER VARCHAR(32),\n" +
-                            "   CODENAME VARCHAR(20),n" +
-                            "   METAKEY VARCHAR(250) \n"+ 
+                            "   CODENAME VARCHAR(20), \n" +
+                            "   STORICO BLOB, \n"+ 
+                            "   PRIMARY KEY (ID) \n"+
                             ")");       
     }
     
@@ -85,48 +101,44 @@ public class Sessione {
      * @param mess
      * @param userName 
      */
-    public static void AddSessione(int ID, int mess,String userName,String codename, String metakey)
+    public static void AddSessione(int messId,String userName,String codename, Object storico) throws SQLException
     {
-        String[] column= new String[]{ "IDMESS", "USERNAME","CODENAME","METAKEY"};
-        Database.Insert("SESSIONE", column, new DataBaseElement[]{
-                                        //new DataBaseElement(DataBaseElement.Type.INT, ID),
-                                        new DataBaseElement(DataBaseElement.Type.INT, mess),
-                                        new DataBaseElement(DataBaseElement.Type.STRING, userName),
-                                        new DataBaseElement(DataBaseElement.Type.STRING, codename),
-                                        new DataBaseElement(DataBaseElement.Type.STRING, metakey)
-                                    });
+            String sql= "INSERT INTO SESSIONE ( IDMESS , USERNAME , CODENAME , STORICO )  VALUES( ? , ? , ? , ?)";
+            PreparedStatement ps=Database.conn.prepareStatement(sql);
+            ps.setInt(1, messId);
+            ps.setString(2, userName);
+            ps.setString(3, codename  );
+            ps.setObject(4, storico );
+            ps.execute();
+
+        
     }
-    
     /**
      * Carica la sessione corrente nel db
-     * @deprecated Usare invece Sessione.AddSessione()
      */
-    public void Insert()
+    public void Insert() throws SQLException
     {
-        String[] column= new String[]{ "IDMESS", "USERNAME","CODENAME", "METAKEY"};
-        Database.Insert("SESSIONE", column, new DataBaseElement[]{
-                                        //new DataBaseElement(DataBaseElement.Type.INT, ID),
-                                        new DataBaseElement(DataBaseElement.Type.INT, Mess.Id),
-                                        new DataBaseElement(DataBaseElement.Type.STRING, User.Username),
-                                        new DataBaseElement(DataBaseElement.Type.STRING, Codename),
-                                        new DataBaseElement(DataBaseElement.Type.STRING, Serialize())
-                                    });
-    }
-    
-    /**
-     * 
-     * @param ID
-     * @param user Utente 
-     * @return Sessione Restituisce la sessione che rispetta i dati richiesti
-     */
-    public static Sessione GetSessioneById(int ID, Utente user)
-    {
-       return Database.GetSessioneById(ID,user);
+        Sessione.AddSessione( Mess.Id, User.Username, Codename, Storico);
     }
     
     
     public static Sessione LoadSessione(String Codename, String User) {
-        return Database.LoadSessione(Codename,User);
+        try{
+            
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM SESSIONE WHERE CODENAME = ? AND USERNAME = ?");
+            ps.setString(1, Codename);
+            ps.setString(2, User);
+            ps.execute();
+            ResultSet rs = ps.getResultSet();
+            if(rs.next())
+            {
+               return new Sessione(rs.getInt("ID"), rs.getInt("IDMESS"), rs.getString("USERNAME"),rs.getObject("STORICO"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        
+        return null;
     }
     
     
@@ -138,25 +150,14 @@ public class Sessione {
     }
     
     
-    public String Serialize()
-    {
-        
-        return Storico.Serialize();    
-//      return Ipotesi.Serialize();
-    }
-    
-    public void Deserialize(String metakey)         
-    {
-        Storico.Deserialize(metakey);
-        Ipotesi = Storico.GetLista();
- 
-    }
-    
-    
     public void Undo()
     {
         Ipotesi.RemoveLastNode();
-        Storico.Undo();        
+        try {        
+            Storico.Undo();
+        } catch (Exception ex) {
+            Logger.getLogger(Sessione.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public String GetTextIpotesi()
@@ -165,13 +166,27 @@ public class Sessione {
     }
 
 
-    public boolean CheckSession() {
-       return Database.CheckSession(Codename,User.Username);
+    public boolean CheckSession() throws SQLException {
+            PreparedStatement pr = conn.prepareStatement("SELECT * FROM SESSIONE WHERE CODENAME =  ?  AND USERNAME = ?" );
+            pr.setString(1, Codename);
+            pr.setString(2, User.Username);
+            pr.execute();
+            ResultSet rs=pr.getResultSet();
+            if(rs.next())
+            {
+               return true;
+            }
+        return false;
     }
 
-    public void Update() {
-        MetaKey=Storico.Serialize();
-        Database.UpdateSession(Codename,User.Username,MetaKey);
+    public void Update() throws SQLException {
+            PreparedStatement ps = conn.prepareStatement("UPDATE SESSIONE SET STORICO = ? "
+                    + "WHERE CODENAME = ? AND USERNAME = ?");
+            ps.setObject(1, Storico  );
+            ps.setString(2, Codename);
+            ps.setString(3, User.Username);
+            ps.execute();
+
     }
     
 }

@@ -47,9 +47,9 @@ public class ListaIpotesi {
     public String Serialize() {
         NodeIpotesi n=root;
         String ris = "";
-        while(n.Next())
+        while(n.HasNext())
         {
-            ris+=n.GetNext().toString();
+            ris+=n.GetLastSon().toString();
         }
         
         return ris;
@@ -65,9 +65,9 @@ public class ListaIpotesi {
     {
         NodeIpotesi n=root;
         String ris = "";
-        while(n.Next())
+        while(n.HasNext())
         {
-            n=n.GetNext();
+            n=n.GetLastSon();
             ris+=n.toString()+"\n";
             
         }
@@ -96,13 +96,13 @@ public class ListaIpotesi {
 
     void RemoveLastNode() {
         NodeIpotesi n=root;
-        while(n!= null && n.Next())
+        while(n!= null && n.HasNext())
         {
-            if(!n.GetNext().Next())
+            if(!n.GetLastSon().HasNext())
             {
-                n.son.remove(n.GetNext());
+                n.son.remove(n.GetLastSon());
             }
-            n=n.GetNext();
+            n=n.GetLastSon();
 //            if(!n.Next())
 //                n=null;
         }
@@ -112,9 +112,9 @@ public class ListaIpotesi {
     public String GetTextIpotesi( String Text)
     {
         NodeIpotesi n=root;
-        while(n.Next())
+        while(n.HasNext())
         {
-            n=n.GetNext();
+            n=n.GetLastSon();
             Text = Text.replace(n.a,n.b);            
         }
         

@@ -6,12 +6,16 @@
 
 package model;
 
-import model.DataBaseElement.Type;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static model.Database.conn;
 
 /**
  *
@@ -38,10 +42,11 @@ public class Utente {
      */
     public static void CreateTable()
     {
-        Database.CreateTable("create table \"APP\".UTENTE"+
+        Database.CreateTable("create table IF NOT EXISTS UTENTE"+
                                 "("+
-                                    "USERNAME VARCHAR(32) not null primary key,"+
-                                    "PASSWORD VARCHAR(32)"+
+                                    "USERNAME VARCHAR(32) not null,"+
+                                    "PASSWORD VARCHAR(32),"+
+                                    "PRIMARY KEY(USERNAME)"+
                                 ")");      
     }
     
@@ -52,24 +57,24 @@ public class Utente {
      */
     public static void AddUtente(String User, String Pass_Chiaro)
     {
-        String[] column= new String[]{"USERNAME", "PASSWORD"};
-        Database.Insert("Utente", column, new DataBaseElement[]{
-                                        new DataBaseElement(Type.STRING, User),
-                                        new DataBaseElement(Type.STRING, Pass_Chiaro)
-                                    });
+        try {
+            PreparedStatement pr=conn.prepareStatement("INSERT INTO UTENTE (`USERNAME` , `PASSWORD` ) VALUES (? , ?)");
+            pr.setString(1, User);
+            pr.setString(2, Pass_Chiaro);
+            pr.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Utente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+                
+
     }
     
      /**
      * Carica la sessione corrente nel db
-     * @deprecated Usare invece Utente.AddUtente(...)
      */
     public void Insert()
     {
-        String[] column= new String[]{"USERNAME", "PASSWORD"};
-        Database.Insert("Utente", column, new DataBaseElement[]{
-                                        new DataBaseElement(Type.STRING, Username),
-                                        new DataBaseElement(Type.STRING, Password)
-                                    });
+        Utente.AddUtente(Username, Password);
     }
                 
     
@@ -79,7 +84,20 @@ public class Utente {
      */
     public int CheckMessage()
     {
-        return Database.CheckMessage(Username);
+        try {
+            PreparedStatement pr=Database.conn.prepareStatement("SELECT * FROM MESSAGGIO WHERE RECEIVER = ? AND ISREAD = FALSE");
+            pr.setString(1, Username);
+            pr.execute();
+            ResultSet rs = pr.getResultSet();
+            int ris=0;
+            while (rs.next()) {
+                ris++;
+            }
+            return ris;
+        } catch (SQLException ex) {
+            Logger.getLogger(Utente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
     }
     
     /**
@@ -104,6 +122,17 @@ public class Utente {
             return false;
     }
     
+    
+        /**
+     * Verifica l'esistenza di un utente nel DB
+     * @param User
+     * @return true se esiste, false altrimenti
+     */
+    public static boolean CheckUtente(String User)
+    {
+        return (GetUtente(User) == null) ? false : true;
+    }
+    
     /**
      * Verifica l'esistenza di un utente nel DB
      * @param User
@@ -112,8 +141,9 @@ public class Utente {
      */
     public static boolean CheckUtente(String User, String Pass_Chiaro)
     {
-        return (Database.CheckUtente(User, Pass_Chiaro) == null) ? false : true;
+        return (GetUtente(User, Pass_Chiaro) == null) ? false : true;
     }
+    
      
     /**
      * Restituisce un utente conoscendo solo il suo nome:
@@ -125,7 +155,7 @@ public class Utente {
      */
     public static Utente GetUtente(String User)
     {
-        return Database.CheckUtente(User, null);
+        return GetUtente(User, "");
     }
     
     
@@ -137,7 +167,22 @@ public class Utente {
      */
     public static Utente GetUtente(String User, String Pass_Chiaro)
     {
-        return Database.CheckUtente(User, Pass_Chiaro);
+        try{
+            String pass= (Pass_Chiaro.equals("") ) ? ""  : "AND PASSWORD = ? " ;
+            PreparedStatement pr=Database.conn.prepareStatement("SELECT * FROM UTENTE WHERE USERNAME=? "+ pass );
+            pr.setString(1, User);
+            if(!pass.equals(""))
+                pr.setString(2, Pass_Chiaro);
+            pr.execute();
+            ResultSet rs = pr.getResultSet();
+            if(!rs.next())
+                return null;
+            else
+              return new Utente(rs.getString("Username"), rs.getString("Password"));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
 

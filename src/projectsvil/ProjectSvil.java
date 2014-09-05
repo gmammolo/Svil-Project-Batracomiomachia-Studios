@@ -9,6 +9,7 @@ package projectsvil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,8 +42,8 @@ public class ProjectSvil {
         
         
         Database.Initializate();
-        
-        
+        //createTable();
+        //System.exit(0); 
         
         
         
@@ -55,7 +56,6 @@ public class ProjectSvil {
         
         //Utente.AddUtente("Pluto", "pass");
         
-        Utente.GetAllUtenti();
         
        
         

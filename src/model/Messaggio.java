@@ -10,8 +10,13 @@ import cifrario.CifrarioCesare;
 import cifrario.CifrarioSostituzione;
 import cifrario.CryptSystem;
 import cifrario.Metodo_Criptaggio;
-import model.DataBaseElement.Type;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static model.Database.conn;
 
 /**
  *
@@ -64,7 +69,7 @@ public class Messaggio {
         Receiver=receiver;
         IsRead=isRead;
         Informazioni_Cifratura=new CifraturaOptions();
-        if(Cifrato=="")
+        if("".equals(Cifrato))
             Cifra();
         
     }
@@ -81,43 +86,36 @@ public class Messaggio {
      * @param IsRead
      * @param metakey 
      */
-    public static void AddMessaggio(String Testo,String Cifrato, Metodo_Criptaggio CryptMethod, String Lingua, String Sender, String Receiver, boolean  IsRead, String metakey)
+    public static void AddMessaggio(String Testo,String Cifrato, String CryptMethod, String Lingua, String Sender, String Receiver, boolean  IsRead, String metakey)
     {
-        String[] column =new String[]{"TESTO","CIFRATO","METODO_CRIPTAGGIO","LINGUA","SENDER","RECEIVER","ISREAD","METAKEY"};
-        Database.Insert("MESSAGGIO",column, new DataBaseElement[]
-                                            {
-                                               // new DataBaseElement(Type.INT, Id),
-                                                new DataBaseElement(Type.STRING, Testo),
-                                                new DataBaseElement(Type.STRING, Cifrato),
-                                                new DataBaseElement(Type.STRING, CryptMethod.name()),
-                                                new DataBaseElement(Type.STRING, Lingua),
-                                                new DataBaseElement(Type.STRING, Sender),
-                                                new DataBaseElement(Type.STRING, Receiver),
-                                                new DataBaseElement(Type.BOOL, String.valueOf(IsRead)),
-                                                new DataBaseElement(Type.STRING, metakey)
-                                            });
+        try {
+            PreparedStatement pr=conn.prepareStatement("INSERT INTO MESSAGGIO (TESTO,CIFRATO,METODO_CRIPTAGGIO,LINGUA,SENDER,RECEIVER,ISREAD,METAKEY) VALUES (? , ? , ? , ? , ? , ? , ? , ?)");
+            pr.setString(1, Testo);
+            pr.setString(2, Cifrato);
+            pr.setString(3, CryptMethod);
+            pr.setString(4, Lingua);
+            pr.setString(5, Sender);
+            pr.setString(6, Receiver);
+            pr.setBoolean(7, IsRead);
+            pr.setString(8, metakey);
+            
+            pr.executeUpdate();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+   
     }
    
     /**
      * Metodo di inserimento nel DB
-     * @deprecated consigliato l'utilizzo di Messaggio.AddMessaggio(...)
      */
     public void Insert()
     {
-        String[] column =new String[]{"TESTO","CIFRATO","METODO_CRIPTAGGIO","LINGUA","SENDER","RECEIVER","ISREAD","METAKEY"};
-        if(Id >= 0)
-            Database.Insert("MESSAGGIO",column, new DataBaseElement[]
-                                            {
-                                               // new DataBaseElement(Type.INT, Id),
-                                                new DataBaseElement(Type.STRING, Testo),
-                                                new DataBaseElement(Type.STRING, Cifrato),
-                                                new DataBaseElement(Type.STRING, CryptMethod.name()),
-                                                new DataBaseElement(Type.STRING, Lingua),
-                                                new DataBaseElement(Type.STRING, Sender),
-                                                new DataBaseElement(Type.STRING, Receiver),
-                                                new DataBaseElement(Type.BOOL, String.valueOf(IsRead)),
-                                                new DataBaseElement(Type.STRING, metakey)
-                                            });
+        Messaggio.AddMessaggio(Testo, Cifrato, CryptMethod.name(), Lingua, Sender, Receiver, IsRead, metakey);
+
     }
     
     /**
@@ -153,7 +151,27 @@ public class Messaggio {
       */
      public static ArrayList<Messaggio> GetMessageList(Utente reader, int limit)
      {
-        return Database.GetMessageList(reader, limit);
+
+        ArrayList<Messaggio> list= new  ArrayList<Messaggio>();
+        
+        try {    
+            PreparedStatement pr=conn.prepareStatement("SELECT * FROM MESSAGGIO \n" +
+                    "WHERE  RECEIVER = ? \n" +
+                    "ORDER BY ISREAD ASC,ID\n" +
+                    "LIMIT ?");
+            pr.setString(1, reader.Username);
+            pr.setInt(2, limit);
+            pr.execute();
+            ResultSet rs = pr.getResultSet();
+            while(rs.next())
+            {
+                list.add(new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD")));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return list;
      }
      
      /**
@@ -161,7 +179,14 @@ public class Messaggio {
       * @param MessageID Id del messaggio da settare
       */
     public static void ReadMessage(int MessageID) {
-        Database.setReadMessage(MessageID);
+        try {
+            PreparedStatement pr=conn.prepareStatement("UPDATE MESSAGGIO SET ISREAD = true WHERE ID = ? ");
+            pr.setInt(1, MessageID);
+            pr.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     
     }
     
@@ -172,7 +197,21 @@ public class Messaggio {
      */
     public static Messaggio GetMessaggioById(int id)
     {
-        return Database.GetMessaggioByID(id);
+        try {
+            PreparedStatement pr=conn.prepareStatement("SELECT * FROM MESSAGGIO WHERE  ID = ?");
+            pr.setInt(1, id);
+            pr.executeQuery();
+            ResultSet rs=pr.getResultSet();
+            if(rs.next())
+            {
+               return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD"));
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
     }
     
     /**
@@ -180,16 +219,18 @@ public class Messaggio {
      */
     public static void CreateTable()
     {
-        Database.CreateTable("create table \"APP\".MESSAGGIO"+
+        Database.CreateTable("create table IF NOT EXISTS MESSAGGIO"+
                             "("+
-                                "ID INTEGER not null primary key GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1),"+
+//                                "ID INTEGER not null primary key GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1),"+
+                                "ID INT not null AUTO_INCREMENT ,"+
                                 "TESTO VARCHAR(250),"+
                                 "CIFRATO VARCHAR(250),"+
                                 "METODO_CRIPTAGGIO VARCHAR(30),"+
                                 "LINGUA VARCHAR(30),"+
                                 "SENDER VARCHAR(32),"+
                                 "RECEIVER VARCHAR(32),"+
-                                "ISREAD BOOLEAN default FALSE not null"+
+                                "ISREAD BOOLEAN default FALSE not null,"+
+                                "PRIMARY KEY(ID)"+
                             ")");
     }
     
@@ -231,14 +272,32 @@ public class Messaggio {
     }
     
     
-    public static Messaggio GetRandomMessageExluseUser(String user) throws Exception
+    public static Messaggio GetRandomMessageExluseUser(String user)
     {
+        try {
+            PreparedStatement pr = conn.prepareStatement("select * from MESSAGGIO  \n" +
+                    "WHERE\n" +
+                    "SENDER != ? AND \n" +
+                    "RECEIVER != ?\n" +
+                    "ORDER BY RAND() LIMIT 0,1");
+            pr.setString(1, user);
+            pr.setString(2, user);
+            pr.execute();
+            ResultSet rs= pr.getResultSet();
+            if(rs.next())
+            {
+                return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD"));
+            }
+            else
+                throw new Exception("Nessun Messaggio valido salvato nel db");
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-       Messaggio m =  Database.GetRandomMessageExluseUser(user);
-       if(m == null)
-           throw new Exception("Nessun Messaggio da visualizzare");
-       
-       return m;
+        return null;
     }
     
 

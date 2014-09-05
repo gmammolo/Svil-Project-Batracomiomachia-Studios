@@ -7,12 +7,14 @@
 package controller;
 
 import cifrario.Metodo_Criptaggio;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -131,19 +133,19 @@ public class GuiController {
     
     public static void SendMessage(JTextField Destinatario, JLabel Status, JComboBox MetodoCriptaggio, JTextArea Testo, JComboBox Linguaggio, Utente Sender, ChooseFrame Parent, SendMessage This)
     {
-        String Dest = (Database.CheckUtente(Destinatario.getText())) ? Destinatario.getText() : "";
+        String Dest = ( Utente.CheckUtente(Destinatario.getText()) ) ? Destinatario.getText() : "";
         if(Dest.equals(""))
         {
             Status.setText("Attenzione: Destinatario non accettabile");
             return;
         }
         //recuperare ID
-        int ID = Messaggio.GetLastID();
-        if(ID < 0)
-        {
-            Status.setText("Attenzione: Errore temporaneo durante il salvataggio nel db");
-            return;
-        }
+//        int ID = Messaggio.GetLastID();
+//        if(ID < 0)
+//        {
+//            Status.setText("Attenzione: Errore temporaneo durante il salvataggio nel db");
+//            return;
+//        }
         //salvare nel db
         Metodo_Criptaggio method= Metodo_Criptaggio.NESSUNO;
         switch ((String)MetodoCriptaggio.getSelectedItem())
@@ -158,7 +160,7 @@ public class GuiController {
                 method= Metodo_Criptaggio.NESSUNO;
                 break;
         }
-        new Messaggio(ID,Testo.getText(),"",  method.name(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
+        new Messaggio(Testo.getText(), "" ,  method.name(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
         Parent.sendMessage("Messaggio inviato con successo");
         Status.setText("Messaggio Inviato con successo");
         //chiudere
@@ -185,8 +187,13 @@ public class GuiController {
     }
 
     public static void LoadSession(ChooseSession aThis, String Codename) {
-       
-        JFrame fr=new SessioneGui(Sessione.LoadSessione(Codename,aThis.User.Username));
+        Sessione sess=Sessione.LoadSessione(Codename,aThis.User.Username);
+        if(sess==null)
+        {
+            JOptionPane.showMessageDialog(null,"Attenzione, Non è stata trovata nessuna Sessione con quel nome");
+            return;
+        }
+        JFrame fr=new SessioneGui(sess);
         aThis.dispose();
         fr.setVisible(true);
     }
@@ -211,11 +218,19 @@ public class GuiController {
     }
 
     public static void SaveSession(SessioneGui aThis, String text) {
-        aThis.Session.Codename=text;
-        if(aThis.Session.CheckSession())
-            aThis.Session.Update();
-        else
-            aThis.Session.Insert();
+        try {
+            aThis.Session.Codename=text;
+            if(aThis.Session.CheckSession())
+                aThis.Session.Update();
+            else
+                aThis.Session.Insert();
+            
+            JOptionPane.showMessageDialog(null,"Salvataggio effettuato con successo");
+        } catch (SQLException ex) {
+            Logger.getLogger(GuiController.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"Salvataggio Fallito");
+        }
+        
     }
 
     public static void OpenDizionario(SessioneGui aThis, JTextPane Cifrato) {

@@ -6,14 +6,20 @@
 
 package model;
 
-import java.sql.Array;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,8 +28,9 @@ import java.util.Queue;
 public class Database {
     
 
-    protected static Connection conn;
+    public static Connection conn;
     protected static Statement s ;
+    
     
     
     /**
@@ -32,20 +39,33 @@ public class Database {
     public static void Initializate()
     {
         try {
-            Class.forName("org.apache.derby.jdbc.ClientDriver");
-        } catch (ClassNotFoundException cnfe) {
-            System.err.println("Derby driver not found.");
-            System.exit(0);
+            conn= InitializateMysql();
+        } catch (Exception ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
-        try{
-            conn = DriverManager.getConnection("jdbc:derby://localhost/Svil;create=true;user=APP;pass=APP");
-            s = conn.createStatement();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.err.println("Connessione Fallita");
-            Close();
-            System.exit(0);
-        }
+    }
+    
+    public static Connection InitializateMysql() throws Exception
+    {
+//            String driver = "org.gjt.mm.mysql.Driver";
+            String driver = "com.mysql.jdbc.Driver";
+            
+            String url = "jdbc:mysql://localhost/sviluppo";
+            String username = "root";
+            String password = "";
+
+            Class.forName(driver);
+            Connection conn = DriverManager.getConnection(url, username, password);
+            return conn;
+        
+    }
+    
+    
+
+    public static Connection InitializateDerby() throws Exception
+    {
+        Class.forName("org.apache.derby.jdbc.ClientDriver");
+        return DriverManager.getConnection("jdbc:derby://localhost/Svil;create=true;user=APP;pass=APP");
     }
     
     /**
@@ -63,33 +83,6 @@ public class Database {
         }
     }
 
-    /**
-     * Aggiunge al db gli attributi passati nella giusta tabella
-     * @param Table  Nome della tabella in cui inserire la tupla
-     * @param column Array con i nomi dellle colonne
-     * @param elements i valori della tupla
-     * @return true in caso di successo, false altrimenti
-     */
-    public static boolean Insert(String Table,String[] column, DataBaseElement[] elements)
-    {
-//        INSERT INTO APP.SESSIONE (ID, IDMESS, IDUSER) 
-//	VALUES (1, 1, 'pippo')
-        
-        try{
-            String strcolumn=GetColumnToString(column);
-            
-            Statement s = conn.createStatement();
-            System.out.println("INSERT INTO " +Table+" "+strcolumn+ "  VALUES ("+join(elements,",","'")+")");
-            s.execute("INSERT INTO " +Table+" "+strcolumn+ "  VALUES ("+join(elements,",","'")+")");
-  
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return false;
-        }
-        
-        return true;
-    }
-    
     
     /**
      * Metodo Privato per l'inserimento delle tabelle. Genera la stringa delle colonne
@@ -153,28 +146,7 @@ public class Database {
            
   }
     
-  /**
-   * Verifica l'esistenza di messaggi non letti
-   * @param receiver Id-Username dell' utente da verificare
-   * @return il numero di messaggi
-   */
-  public static int CheckMessage(String receiver)
-  {
-      try{
-          s.execute("SELECT * FROM MESSAGGIO WHERE RECEIVER = '"+receiver+"' AND ISREAD = FALSE");
-          ResultSet rs = s.getResultSet();
-          int ris=0;
-          while (rs.next()) {
-              ris++;
-          }
-          return ris;
-      } catch (SQLException ex) {
-            ex.printStackTrace();
-            return 0;
-        }
-      
-  }
-  
+
   /**
    * Metodo Privato: Ritorna tutte le tuple di una determinata tabella
    * @param Tables tabella in cui cercare le tuple
@@ -195,53 +167,8 @@ public class Database {
       }
   }
   
-  /**
-   * Verifica e ritorna l'utente con un username o password. 
-   * @param User Username dell' utente
-   * @param Pass_Chiaro FACOLTATIVA: verifica della password per login
-   * @return Utente che corrisponde ai dati inseriti
-   */
-    public static Utente CheckUtente(String User, String Pass_Chiaro)
-    {
-        
-        try{
-          String pass= (Pass_Chiaro == null ) ? ""  : "AND PASSWORD = '"+Pass_Chiaro+"'" ;
-          s.execute("SELECT * FROM UTENTE WHERE USERNAME='"+User+"' "+ pass );
-          ResultSet rs = s.getResultSet();
-          if(!rs.next())
-              return null;
-          else
-              return new Utente(rs.getString("Username"), rs.getString("Password"));
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-    
     
    
-    
-    /**
-     * @deprecated : Metodo di verifica dell' esistenza di un utente nel db 
-     * @param User
-     * @return True: esiste False: non esiste
-     */
-    public static boolean CheckUtente(String User)
-    {
-        
-        try{
-         
-          s.execute("SELECT * FROM UTENTE WHERE USERNAME='"+User+"' ");
-          ResultSet rs = s.getResultSet();
-          if(!rs.next())
-              return false;
-          else
-              return true;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return false;
-        }
-    }
   
     /**
      * Metodo utilizzato per sopperire alla mancanza dell' autoincrement.
@@ -269,52 +196,7 @@ public class Database {
         }
     }
     
-    /**
-     * 
-     * @param id Id del messaggio
-     * @return Messaggio il messaggio che corrisponde all' id inserito
-     */
-    public static Messaggio GetMessaggioByID(int id)
-    {
-        try{
-            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
-            s.execute("SELECT * FROM MESSAGGIO \n" +
-                      "WHERE  ID = " + id );
-            ResultSet rs = s.getResultSet();
 
-            if(rs.next())
-            {
-               return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD"));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-    
-    /**
-     * 
-     * @param id id della sessione
-     * @param user nome dell' utente
-     * @return Sessione restituisce la sessione con un determinato id che appartiene a un determinato utente (possibilmente collegato)
-     */
-    public static Sessione GetSessioneById(int id, Utente user) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        try{ 
-          s.execute("SELECT * FROM SESSIONE WHERE ID = "+id+" AND USERNAME= '"+user.Username+" '" );
-          ResultSet rs = s.getResultSet();
-          if(rs.next())
-          {
-              return new Sessione(rs.getInt("ID"),rs.getInt("IDMESS"), rs.getString("USERNAME"), rs.getString("METAKEY"));
-          }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            
-        }
-        
-        return null;
-    
-    }
     
     /**
      * Restituisce la lista dei messaggi 
@@ -352,157 +234,32 @@ public class Database {
     {
         return value;
     }
-    
-    
-    /**
-     * Effettua il join di un array di string nella formattazione adatta per l'inserimento
-     * nel database
-     * @param elements di Stringhe
-     * @param glue Carattere di separazione (es. ",")
-     * @param comma Carattere di virgolette (es " o ' )
-     * @return Stringa formattata per essere inserita nelle quary insert del db
-     */
-    public static String join(DataBaseElement[] elements, String glue,String comma)
-    {
-      int k = elements.length;
-      if ( k == 0 )
-      {
-        return null;
-      }
-      StringBuilder out = new StringBuilder();
-      //out.append( comma+s[0]+comma );
-      out.append( elements[0].GetElementForDB(comma) );
-      for ( int x=1; x < k; ++x )
-      {
-       // out.append(glue).append( comma+s[x]+comma);
-        out.append(glue).append( elements[x].GetElementForDB(comma) );
-      }
-      return out.toString();
-    }
 
-    /** 
-     * @deprecated
-     * Restituisce il valore nel giusto formato come stringa o come int
-     * per inserirlo al db
-     * @param val valore da testare
-     * @param comma virgole da usare
-     * @return 
-     * 
+
+    /**
+     * Trasforma un Oggetto che implementa un Serializable in un array di byte
+     * @param obj L'oggetto deve esserere Serializabile
+     * @return byte[] 
+     * @throws IOException 
      */
-    private static String getIntFormat(String val,String comma)
-    {
-        try{
-            int iCheck = Integer.parseInt(val);
-            return val;
-        }
-        catch(NumberFormatException e) { return comma +val+ comma; }
+    public static byte[] serialize(Object obj) throws IOException {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        ObjectOutputStream o = new ObjectOutputStream(b);
+        o.writeObject(obj);
+        return b.toByteArray();
     }
 
     /**
-     * Setta un messaggio come letto
-     * @param MessageID Id del messaggio
+     * Riconverte un'array di byte in un oggetto Serializzabile
+     * @param bytes byte[] 
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException 
      */
-    public static void setReadMessage(int MessageID) {
-        
-        try{ 
-          s.execute("UPDATE APP.MESSAGGIO SET \"ISREAD\" = true WHERE ID = "+MessageID);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+    public static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream b = new ByteArrayInputStream(bytes);
+        ObjectInputStream o = new ObjectInputStream(b);
+        return o.readObject();
     }
-
-    static ArrayList searchParola(String parola) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-       ArrayList<String> list= new  ArrayList<String>();
-        try{
-//            System.out.println("SELECT * FROM DIZIONARIO \n" +
-//                      "WHERE  PAROLA LIKE '"+parola+"'"); //non so perchè vuole 1 anzichè column  
-            s.execute("SELECT * FROM DIZIONARIO \n" +
-                      "WHERE  PAROLA LIKE '"+parola+"'");
-            ResultSet rs = s.getResultSet();
-
-            while(rs.next())
-            {
-                list.add(rs.getString("PAROLA"));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return list;
-    
-    }
-
-    public static Messaggio GetRandomMessageExluseUser(String user) {
-       try{
-            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
-            s.execute(  "select * from MESSAGGIO  \n" +
-                        "WHERE \n" +
-                        "SENDER != '"+user+"' AND\n" +
-                        "RECEIVER != '"+user+"'\n" +
-                        "ORDER BY RANDOM()");
-            //s.setMaxRows(1);
-            ResultSet rs = s.getResultSet();
-            
-            if(rs.next())
-            {
-               return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD"));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-       
-       return null;
-    }
-
-    static Sessione LoadSessione(String Codename, String User) {
-        try{
-            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
-            System.out.println( "SELECT * FROM SESSIONE WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
-            s.execute(  "SELECT * FROM SESSIONE WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'"+
-            "FETCH FIRST 1 ROWS ONLY");
-//            s.setMaxRows(1); //Attenzione: questo valore rimane attivo. se si usa quessto metodo va poi resettato
-            ResultSet rs = s.getResultSet();
-            
-            if(rs.next())
-            {
-               return new Sessione(rs.getInt("ID"), rs.getInt("IDMESS"), rs.getString("USERNAME"),rs.getString("METAKEY"));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-       
-       return null;
-    }
-
-    static boolean CheckSession(String Codename, String User) {
-        try{
-            System.out.println( "SELECT * FROM SESSIONE WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
-            s.execute(  "SELECT * FROM SESSIONE WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
-//            s.setMaxRows(1); //Attenzione: questo valore rimane attivo. se si usa quessto metodo va poi resettato
-            ResultSet rs = s.getResultSet();
-            
-            if(rs.next())
-            {
-               return true;
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return false;
-    }
-
-    static void UpdateSession(String Codename, String User, String Metakey) {
-        try{
-            System.out.println("UPDATE SESSIONE SET METAKEY = '"+Metakey+"'"
-                    + "WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
-            s.execute("UPDATE SESSIONE SET METAKEY = '"+Metakey+"'"
-                    + "WHERE CODENAME = '"+Codename+"' AND USERNAME = '"+User+"'");
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-
-
-    
 }
+    

@@ -6,14 +6,18 @@
 
 package model;
 
-import java.util.ArrayList;
+
+import java.io.Serializable;
+
 
 /**
  *
  * @author Giuseppe
  */
-public class AlberoIpotesi {
+public class AlberoIpotesi implements Serializable {
   
+    private static final long serialVersionUID = 2890710187018635891L;
+    
     protected NodeIpotesi root;
     protected NodeIpotesi index;
     
@@ -28,7 +32,7 @@ public class AlberoIpotesi {
         index=Nodo;
     }
     
-        public  void AddNewNode(char a, char b)
+    public  void AddNewNode(char a, char b)
     {    
         NodeIpotesi Nodo=new NodeIpotesi(a,b);
         index.addNode(Nodo);
@@ -42,47 +46,34 @@ public class AlberoIpotesi {
         index = Nodo;
     }
             
-     public static void GetIndex()
-     {
-         
-     }
 
-    public void Undo() {
-        if(index!= null && index.parent!= null)
-            index = index.parent;
-    }
-
-    public String Serialize() {
-        return root.Serialize();
-    }
-   
-    public void Deserialize(String text)
-    {
-        root=root.Deserialize(text);
-        NodeIpotesi  n = root;
-        while(n.son.size()> 0 )
-            n =  n.son.get(n.son.size()-1);
-        index = n ;
-    }
-       
-    
+    public void Undo() throws Exception {
+       index = root.GetParentNode(index);
+    }   
     
     public ListaIpotesi GetLista()
     {
         ListaIpotesi lista=new ListaIpotesi();
-        NodeIpotesi node=index;
-        while(node.a != ' ')
-        {
-            lista.AddNode(NodeIpotesi.Clone(node));
-            node = node.parent;
-        }
-        
+        if(root.HasNext())
+            lista.AddNode(root.GenerateLista(index));
         return lista;
+//        ListaIpotesi lista=new ListaIpotesi();
+//        NodeIpotesi node=root;
+//        for(int i=0; i< node.son.size(); i++)
+//        {
+//            if(node.son.get(i).HasNode(index))
+//            {
+//                node = node.son.get(i);
+//                lista.AddNode(NodeIpotesi.Clone(node));
+//                i=0;
+//            }
+//        }
+//        return lista;
     }
     
     @Override
     public String toString()
     {
-        return root.toStringNode();
+        return root.toStringNode(1);
     }
 }
