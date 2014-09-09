@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jdk.nashorn.internal.ir.Flags;
 import static model.Database.conn;
 
 /**
@@ -36,28 +37,28 @@ public class Messaggio {
     public String Lingua;
     public String Sender;
     public String Receiver;
-    public boolean IsRead;
-    
+//    public boolean IsRead;
+    public MessageFlag Flag;
     private String metakey;
     
     public CifraturaOptions Informazioni_Cifratura;
     
     public Messaggio(String testo)
     {
-        this(-1,testo,"",Metodo_Criptaggio.NESSUNO.name(),"","","");
+        this(-1,testo,"",Metodo_Criptaggio.NESSUNO.name(),"","","",null);
     }
     
     public Messaggio(String testo, String cifrato, String metodo_criptaggio, String lingua, String sender, String receiver)
     {
-        this(-1,testo,cifrato,metodo_criptaggio,lingua,sender,receiver);
+        this(-1,testo,cifrato,metodo_criptaggio,lingua,sender,receiver, null);
     }
     
-    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver)
+    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver, Integer flag)
     {
-        this(id,testo,cifrato,metodo_criptaggio,"",lingua,sender,receiver, false);
+        this(id,testo,cifrato,metodo_criptaggio,"",lingua,sender,receiver, null);
     }
     
-    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String metakey, String lingua,String sender, String receiver, boolean isRead)
+    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String metakey, String lingua,String sender, String receiver, Integer flag)
     {
         Id=id;
         Testo=testo;
@@ -67,7 +68,10 @@ public class Messaggio {
         Lingua=lingua;
         Sender=sender;
         Receiver=receiver;
-        IsRead=isRead;
+        if(flag == null ) 
+            Flag= new MessageFlag();
+        else
+            Flag = new MessageFlag(flag);
         Informazioni_Cifratura=new CifraturaOptions();
         if("".equals(Cifrato))
             Cifra();
@@ -86,17 +90,17 @@ public class Messaggio {
      * @param IsRead
      * @param metakey 
      */
-    public static void AddMessaggio(String Testo,String Cifrato, String CryptMethod, String Lingua, String Sender, String Receiver, boolean  IsRead, String metakey)
+    public static void AddMessaggio(String Testo,String Cifrato, String CryptMethod, String Lingua, String Sender, String Receiver, MessageFlag Flag, String metakey)
     {
         try {
-            PreparedStatement pr=conn.prepareStatement("INSERT INTO MESSAGGIO (TESTO,CIFRATO,METODO_CRIPTAGGIO,LINGUA,SENDER,RECEIVER,ISREAD,METAKEY) VALUES (? , ? , ? , ? , ? , ? , ? , ?)");
+            PreparedStatement pr=conn.prepareStatement("INSERT INTO MESSAGGIO (TESTO,CIFRATO,METODO_CRIPTAGGIO,LINGUA,SENDER,RECEIVER,FLAG,METAKEY) VALUES (? , ? , ? , ? , ? , ? , ? , ?)");
             pr.setString(1, Testo);
             pr.setString(2, Cifrato);
             pr.setString(3, CryptMethod);
             pr.setString(4, Lingua);
             pr.setString(5, Sender);
             pr.setString(6, Receiver);
-            pr.setBoolean(7, IsRead);
+            pr.setInt(7, Flag.getInt() );
             pr.setString(8, metakey);
             
             pr.executeUpdate();
@@ -114,7 +118,7 @@ public class Messaggio {
      */
     public void Insert()
     {
-        Messaggio.AddMessaggio(Testo, Cifrato, CryptMethod.name(), Lingua, Sender, Receiver, IsRead, metakey);
+        Messaggio.AddMessaggio(Testo, Cifrato, CryptMethod.name(), Lingua, Sender, Receiver, Flag, metakey);
 
     }
     
@@ -143,6 +147,35 @@ public class Messaggio {
         return Database.GetLastValue("MESSAGGIO", "ID");
      }
     
+     public static ArrayList<Messaggio> GetRequestMessage(Utente reader, int limit)
+     {
+         ArrayList<Messaggio> temp = GetMessageList(reader,limit);
+         ArrayList<Messaggio> list = new ArrayList<Messaggio>();
+         for(Messaggio mess : temp)
+         {
+             if(mess.IsRequested())
+                 list.add(mess);
+         }
+         
+         return list;
+     }
+     
+     
+             
+             
+     public static ArrayList<Messaggio> GetProposte(Utente reader, int limit)
+     {
+         ArrayList<Messaggio> temp = GetMessageList(reader,limit);
+         ArrayList<Messaggio> list = new ArrayList<Messaggio>();
+         for(Messaggio mess : temp)
+         {
+             if(mess.IsAccepted())
+                 list.add(mess);
+         }
+         
+         return list;
+     }
+     
      /**
       * 
       * @param reader Utente che legge
@@ -157,7 +190,7 @@ public class Messaggio {
         try {    
             PreparedStatement pr=conn.prepareStatement("SELECT * FROM MESSAGGIO \n" +
                     "WHERE  RECEIVER = ? \n" +
-                    "ORDER BY ISREAD ASC,ID\n" +
+                    "ORDER BY FLAG ASC,ID\n" +
                     "LIMIT ?");
             pr.setString(1, reader.Username);
             pr.setInt(2, limit);
@@ -165,7 +198,7 @@ public class Messaggio {
             ResultSet rs = pr.getResultSet();
             while(rs.next())
             {
-                list.add(new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD")));
+                list.add(new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getInt("FLAG")));
             }
         } catch (SQLException ex) {
             Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
@@ -178,10 +211,12 @@ public class Messaggio {
       * Setta un messaggio come già letto
       * @param MessageID Id del messaggio da settare
       */
-    public static void ReadMessage(int MessageID) {
+    public static void ReadMessage(Messaggio mess) {
         try {
-            PreparedStatement pr=conn.prepareStatement("UPDATE MESSAGGIO SET ISREAD = true WHERE ID = ? ");
-            pr.setInt(1, MessageID);
+            mess.SetRead();
+            PreparedStatement pr=conn.prepareStatement("UPDATE MESSAGGIO SET FLAG = ? WHERE ID = ? ");
+            pr.setInt(1, mess.Flag.getInt() );
+            pr.setInt(2, mess.Id);
             pr.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
@@ -189,6 +224,19 @@ public class Messaggio {
         
     
     }
+    
+    public void UpdateFlag()
+    {
+         try {
+            PreparedStatement pr=conn.prepareStatement("UPDATE messaggio SET `FLAG` = ? WHERE `ID` = ?;");
+            pr.setInt(1, Flag.getInt());
+            pr.setInt(2, Id);
+            pr.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Messaggio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     
     /**
      * 
@@ -204,7 +252,7 @@ public class Messaggio {
             ResultSet rs=pr.getResultSet();
             if(rs.next())
             {
-               return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD"));
+               return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getInt("FLAG"));
             }
             
         } catch (SQLException ex) {
@@ -232,6 +280,35 @@ public class Messaggio {
                                 "ISREAD BOOLEAN default FALSE not null,"+
                                 "PRIMARY KEY(ID)"+
                             ")");
+    }
+
+    public boolean IsRead() {
+       return Flag.Letto;
+    }
+
+    private void SetRead() {
+        Flag.setRead();
+        UpdateFlag();
+    }
+
+    private boolean IsRequested() {
+        return !Flag.Accettato && !Flag.Rifiutato;
+    }
+
+    private boolean IsAccepted() {
+        return Flag.Accettato && !Flag.Rifiutato;
+    }
+
+    public void SetRefuse() {
+        Flag.Accettato = false;
+        Flag.Rifiutato = true;
+        UpdateFlag();
+    }
+
+    public void SetAccepted() {
+        Flag.Accettato = true;
+        Flag.Rifiutato = false;
+        UpdateFlag();
     }
     
     
@@ -286,7 +363,7 @@ public class Messaggio {
             ResultSet rs= pr.getResultSet();
             if(rs.next())
             {
-                return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD"));
+                return new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getInt("FLAG"));
             }
             else
                 throw new Exception("Nessun Messaggio valido salvato nel db");
@@ -301,6 +378,69 @@ public class Messaggio {
     }
     
 
+    
+    private class MessageFlag
+    {
+        public boolean Bozza;
+        public boolean Accettato;
+        public boolean Rifiutato;
+        public boolean Letto;
+        
+        private int flag;
+        public MessageFlag()
+        {
+            Bozza=false;
+            Accettato = false;
+            Rifiutato = false;
+            Letto = false;
+            flag=0;
+        }
+        
+        
+        public MessageFlag(Integer flag)
+        {
+            Bozza = ( (flag & 1) == 1 );
+            Accettato = ((flag & 2) == 2 );
+            Rifiutato = ((flag & 4) == 4 );
+            Letto =  ((flag & 8) == 8 );
+            flag=getInt();
+        }
+        
+        public String toSring()
+        {
+            int ris=0;
+            if(Bozza) ris=ris | 1;
+            if(Accettato) ris = ris | 2;
+            if(Rifiutato) ris = ris | 4;
+            if(Letto) ris = ris | 8;
+            return String.valueOf(ris);
+        }
+        
+        public Integer getInt()
+        {
+            int ris=0;
+            if(Bozza) ris=ris | 1;
+            if(Accettato) ris = ris | 2;
+            if(Rifiutato) ris = ris | 4;
+            if(Letto) ris = ris | 8;
+            return ris;
+       
+        }
+
+        private void setRead() {
+            flag = flag | 8 ; 
+            Update();
+        }
+       
+        
+        public void Update()
+        {
+            Bozza = ( (flag & 1) == 1 );
+            Accettato = ((flag & 2) == 2 );
+            Rifiutato = ((flag & 4) == 4 );
+            Letto =  ((flag & 8) == 8 );
+        }
+    }
 }
 
 

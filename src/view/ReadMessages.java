@@ -41,33 +41,60 @@ public class ReadMessages extends javax.swing.JFrame {
 
     private void CreaLista()
     {
-        ArrayList<Messaggio> list=Messaggio.GetMessageList(reader,10);
-        PanelMenu.setLayout(new GridLayout(list.size()+1 , 4 ));
-        PanelMenu.add(new JLabel("Read"));
-        PanelMenu.add(new JLabel("Testo"));
-        PanelMenu.add(new JLabel("Author"));
-        PanelMenu.add(new JLabel("Letto"));
+        ArrayList<Messaggio> list=Messaggio.GetRequestMessage(reader,10);
+        PanelNuovi.setLayout(new GridLayout(list.size()+1 , 4 ));
+        PanelNuovi.add(new JLabel("Author"));
+        PanelNuovi.add(new JLabel("Metodo"));
+        PanelNuovi.add(new JLabel("Accetto"));
+        PanelNuovi.add(new JLabel("Rifiuto"));        
+        for(Messaggio mess : list)
+        {
+            JLabel label=new JLabel(mess.Sender);
+            label.setBorder(BorderFactory.createLineBorder(Color.black));
+            PanelNuovi.add(label);
+            
+            label=new JLabel(mess.CryptMethod.name());
+            label.setBorder(BorderFactory.createLineBorder(Color.black));
+            PanelNuovi.add(label);
+            
+            AcceptedButton accbut=new AcceptedButton(mess,this);
+            accbut.addActionListener(accbut);
+            accbut.setBorder(BorderFactory.createLineBorder(Color.black));
+            PanelNuovi.add(accbut);
+            
+            RefuseButton but=new RefuseButton(mess,this);
+            but.addActionListener(but);
+            but.setBorder(BorderFactory.createLineBorder(Color.black));
+            PanelNuovi.add(but);
+        }       
+                
+        list=Messaggio.GetProposte(reader,10);
+        PanelAccettati.setLayout(new GridLayout(list.size()+1 , 4 ));
+        PanelAccettati.add(new JLabel("Read"));
+        PanelAccettati.add(new JLabel("Testo"));
+        PanelAccettati.add(new JLabel("Author"));
+        PanelAccettati.add(new JLabel("Letto"));
         
         for(Messaggio mess : list)
         {
             ReadButton but=new ReadButton(mess,this);
             but.addActionListener(but);
             but.setBorder(BorderFactory.createLineBorder(Color.black));
-            PanelMenu.add(but);
+            PanelAccettati.add(but);
             
             JLabel label=new JLabel(LimitedMessage(mess.Testo));
             label.setBorder(BorderFactory.createLineBorder(Color.black));
-            PanelMenu.add(label);
+            PanelAccettati.add(label);
             
             label=new JLabel(mess.Sender);
             label.setBorder(BorderFactory.createLineBorder(Color.black));
-            PanelMenu.add(label);
+            PanelAccettati.add(label);
             
-            label=new JLabel(mess.IsRead ? "Letto" : "Non Letto");
+            label=new JLabel(mess.IsRead() ? "Letto" : "Non Letto");
             label.setBorder(BorderFactory.createLineBorder(Color.black));
-            PanelMenu.add(label);
+            PanelAccettati.add(label);
         }
-        PanelMenu.setBorder(BorderFactory.createLineBorder(Color.black));
+        PanelAccettati.setBorder(BorderFactory.createLineBorder(Color.black));
         this.pack();
     }
     
@@ -80,20 +107,21 @@ public class ReadMessages extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        PanelMenu = new javax.swing.JPanel();
+        PanelAccettati = new javax.swing.JPanel();
         Annulla = new javax.swing.JButton();
+        PanelNuovi = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout PanelMenuLayout = new javax.swing.GroupLayout(PanelMenu);
-        PanelMenu.setLayout(PanelMenuLayout);
-        PanelMenuLayout.setHorizontalGroup(
-            PanelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout PanelAccettatiLayout = new javax.swing.GroupLayout(PanelAccettati);
+        PanelAccettati.setLayout(PanelAccettatiLayout);
+        PanelAccettatiLayout.setHorizontalGroup(
+            PanelAccettatiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        PanelMenuLayout.setVerticalGroup(
-            PanelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 218, Short.MAX_VALUE)
+        PanelAccettatiLayout.setVerticalGroup(
+            PanelAccettatiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 119, Short.MAX_VALUE)
         );
 
         Annulla.setText("Annulla");
@@ -103,24 +131,38 @@ public class ReadMessages extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout PanelNuoviLayout = new javax.swing.GroupLayout(PanelNuovi);
+        PanelNuovi.setLayout(PanelNuoviLayout);
+        PanelNuoviLayout.setHorizontalGroup(
+            PanelNuoviLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        PanelNuoviLayout.setVerticalGroup(
+            PanelNuoviLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(PanelMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(314, Short.MAX_VALUE)
                 .addComponent(Annulla)
                 .addGap(19, 19, 19))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PanelAccettati, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PanelNuovi, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(PanelMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(PanelNuovi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addComponent(PanelAccettati, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addComponent(Annulla)
                 .addGap(21, 21, 21))
@@ -139,7 +181,8 @@ public class ReadMessages extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Annulla;
-    private javax.swing.JPanel PanelMenu;
+    private javax.swing.JPanel PanelAccettati;
+    private javax.swing.JPanel PanelNuovi;
     // End of variables declaration//GEN-END:variables
 
 
@@ -147,7 +190,8 @@ public class ReadMessages extends javax.swing.JFrame {
     {
 //        this.dispose();
 //        new ReadMessages(reader, parent).setVisible(true);
-        PanelMenu.removeAll();
+        PanelNuovi.removeAll();
+        PanelAccettati.removeAll();
         CreaLista();
     }
     
@@ -164,8 +208,8 @@ public class ReadMessages extends javax.swing.JFrame {
         return Messaggio.substring(0,lim)+ plus;
     }
     
-    /*bottone personalizzato per settare i messaggi come letti */
-    private class ReadButton extends JButton implements ActionListener
+    
+     private class ReadButton extends JButton implements ActionListener
     {
         Messaggio Mess;
         ReadMessages This;
@@ -181,6 +225,52 @@ public class ReadMessages extends javax.swing.JFrame {
         public void actionPerformed(ActionEvent e) {
             //read Message
             GuiController.GoReadMessage(reader,Mess,This,parent);
+            Refresh();
+
+            
+        }
+    }
+    
+     
+    private class AcceptedButton extends JButton implements ActionListener
+    {
+        Messaggio Mess;
+        ReadMessages This;
+        public AcceptedButton(Messaggio messaggio, ReadMessages This)
+        {
+            super("Accetta");
+            this.Mess=messaggio;
+            this.This=This;
+            
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //read Message
+            Mess.SetAccepted();
+            Refresh();
+
+            
+        }
+    }
+    
+    /*bottone personalizzato per settare i messaggi come letti */
+    private class RefuseButton extends JButton implements ActionListener
+    {
+        Messaggio Mess;
+        ReadMessages This;
+        public RefuseButton(Messaggio messaggio, ReadMessages This)
+        {
+            super("Rifiuta");
+            this.Mess=messaggio;
+            this.This=This;
+            
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //read Message
+            Mess.SetRefuse();
             Refresh();
 
             

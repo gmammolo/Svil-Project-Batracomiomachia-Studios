@@ -85,13 +85,18 @@ public class Utente {
     public int CheckMessage()
     {
         try {
-            PreparedStatement pr=Database.conn.prepareStatement("SELECT * FROM MESSAGGIO WHERE RECEIVER = ? AND ISREAD = FALSE");
+            PreparedStatement pr=Database.conn.prepareStatement("SELECT FLAG FROM MESSAGGIO WHERE RECEIVER = ? ");
             pr.setString(1, Username);
             pr.execute();
             ResultSet rs = pr.getResultSet();
             int ris=0;
             while (rs.next()) {
-                ris++;
+                //Se FLAG AND 12 XOR 12 != 0 vuol dire che il messaggio è stato già letto (2^4) oppure è stato rigiutato
+                if( ((rs.getInt("FLAG") & 12) ^ 12 ) != 0  )
+                {
+                    ris++;
+                }
+                
             }
             return ris;
         } catch (SQLException ex) {

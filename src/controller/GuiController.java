@@ -28,11 +28,13 @@ import model.Utente;
 import view.ChooseFrame;
 import view.ChooseSession;
 import view.DizionarioGui;
+import view.FrequenzeGui;
 import view.LoginForm;
 import view.ReadMessage;
 import view.ReadMessages;
 import view.SendMessage;
 import view.SessioneGui;
+import view.Storico;
 
 /**
  *
@@ -117,16 +119,16 @@ public class GuiController {
     
     public static void GoReadMessage(Utente User,Messaggio Mess,ReadMessages This, ChooseFrame Parent)
     {
-        SetReadMessage(Mess.Id);
+        SetReadMessage(Mess);
         This.setVisible(false);
         JFrame readM= new ReadMessage(User,Mess,Parent);
         readM.setVisible(true);
         
     }
     
-    protected static void SetReadMessage(int MessageID)
+    protected static void SetReadMessage(Messaggio mess)
     {
-            Messaggio.ReadMessage(MessageID);
+            Messaggio.ReadMessage(mess);
             
     }
     
@@ -196,6 +198,7 @@ public class GuiController {
         JFrame fr=new SessioneGui(sess);
         aThis.dispose();
         fr.setVisible(true);
+//        JOptionPane.showMessageDialog(null,sess.Storico.toString());
     }
 
     public static void GoDecriptSession(Utente user, ChooseFrame aThis) {
@@ -263,6 +266,18 @@ public class GuiController {
        Parent.setVisible(true);
        aThis.dispose();
        
+    }
+
+    public static void ShowStorico(SessioneGui parent) {
+        parent.setVisible(false);
+        JFrame fr = new Storico(parent);
+        fr.setVisible(true);
+        
+    }
+
+    public static void CheckFreq(String testo) {
+        JFrame fr= new FrequenzeGui(testo);
+        fr.setVisible(true);
     }
     
 

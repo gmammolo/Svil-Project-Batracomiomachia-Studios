@@ -57,23 +57,15 @@ public class AlberoIpotesi implements Serializable {
         if(root.HasNext())
             lista.AddNode(root.GenerateLista(index));
         return lista;
-//        ListaIpotesi lista=new ListaIpotesi();
-//        NodeIpotesi node=root;
-//        for(int i=0; i< node.son.size(); i++)
-//        {
-//            if(node.son.get(i).HasNode(index))
-//            {
-//                node = node.son.get(i);
-//                lista.AddNode(NodeIpotesi.Clone(node));
-//                i=0;
-//            }
-//        }
-//        return lista;
     }
     
     @Override
     public String toString()
     {
         return root.toStringNode(1);
+    }
+
+    public NodeIpotesi getIndex() {
+        return index;
     }
 }

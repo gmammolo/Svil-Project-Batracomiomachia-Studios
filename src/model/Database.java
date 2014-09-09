@@ -198,32 +198,32 @@ public class Database {
     
 
     
-    /**
-     * Restituisce la lista dei messaggi 
-     * @param reader Username dell' utente richiedente
-     * @param limit numero massimo di messaggi da leggere
-     * @return ArrayList&lt;Messaggio&gt; Lista messaggi
-     */
-    public static ArrayList<Messaggio> GetMessageList(Utente reader, int limit)
-    {
-        ArrayList<Messaggio> list= new  ArrayList<Messaggio>();
-        try{
-            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
-            s.execute("SELECT * FROM MESSAGGIO \n" +
-                      "WHERE  RECEIVER = '"+reader.Username+"' \n" +
-                      "ORDER BY ISREAD ASC,ID\n" +
-                      "FETCH FIRST "+limit+" ROWS ONLY");
-            ResultSet rs = s.getResultSet();
-
-            while(rs.next())
-            {
-                list.add(new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD")));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return list;
-    }
+//    /**
+//     * Restituisce la lista dei messaggi 
+//     * @param reader Username dell' utente richiedente
+//     * @param limit numero massimo di messaggi da leggere
+//     * @return ArrayList&lt;Messaggio&gt; Lista messaggi
+//     */
+//    public static ArrayList<Messaggio> GetMessageList(Utente reader, int limit)
+//    {
+//        ArrayList<Messaggio> list= new  ArrayList<Messaggio>();
+//        try{
+//            //System.out.println("SELECT MAX("+column+") as NUM FROM "+Table+ " GROUP BY 1"); //non so perchè vuole 1 anzichè column  
+//            s.execute("SELECT * FROM MESSAGGIO \n" +
+//                      "WHERE  RECEIVER = '"+reader.Username+"' \n" +
+//                      "ORDER BY ISREAD ASC,ID\n" +
+//                      "FETCH FIRST "+limit+" ROWS ONLY");
+//            ResultSet rs = s.getResultSet();
+//
+//            while(rs.next())
+//            {
+//                list.add(new Messaggio(rs.getInt("ID"), rs.getString("TESTO") , rs.getString("CIFRATO") , rs.getString("METODO_CRIPTAGGIO") ,rs.getString("METAKEY")  ,rs.getString("LINGUA") , rs.getString("SENDER") , rs.getString("RECEIVER") , rs.getBoolean("ISREAD")));
+//            }
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//        }
+//        return list;
+//    }
     
     /**
      * Valida il testo inserito, ovvero rimuove i caratteri non accettabili

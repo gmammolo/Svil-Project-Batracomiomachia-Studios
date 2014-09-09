@@ -104,4 +104,5 @@ public class Dizionario {
         }
         return list;
     }
+
 }

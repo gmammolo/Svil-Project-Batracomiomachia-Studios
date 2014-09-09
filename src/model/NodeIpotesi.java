@@ -142,6 +142,11 @@ public class NodeIpotesi implements Serializable
         return new NodeIpotesi(Node.a,Node.b);
     }
 
-
+    public boolean equals(NodeIpotesi node)
+    {
+        if(a == node.a && b==node.b)
+            return true;
+        return false;
+    }
    
 }
