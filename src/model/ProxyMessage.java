@@ -12,9 +12,14 @@ package model;
  */
 public class ProxyMessage extends Messaggio {
 
-    public ProxyMessage(String testo) {
-        super(testo);
+    static ProxyMessage GetProxy(Messaggio mess) {
+        return new ProxyMessage(mess.Id, mess.Testo, mess.Cifrato, mess.CryptMethod.name(),mess.metakey, mess.Lingua , mess.Sender, mess.Receiver, mess.GetFlagInteger());
     }
+
+    public ProxyMessage(Integer id, String testo, String cifrato, String metodo_criptaggio, String metakey, String lingua, String sender, String receiver, Integer flag) {
+        super(id, testo, cifrato, metodo_criptaggio, metakey, lingua, sender, receiver, flag);
+    }
+
     
     public String getText()
     {

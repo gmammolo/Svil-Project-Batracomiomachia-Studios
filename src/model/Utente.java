@@ -92,7 +92,7 @@ public class Utente {
             int ris=0;
             while (rs.next()) {
                 //Se FLAG AND 12 XOR 12 != 0 vuol dire che il messaggio è stato già letto (2^4) oppure è stato rigiutato
-                if( ((rs.getInt("FLAG") & 12) ^ 12 ) != 0  )
+                if(( rs.getInt("FLAG") & 13 ) == 0 )
                 {
                     ris++;
                 }

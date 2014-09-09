@@ -39,23 +39,33 @@ public class Messaggio {
     public String Receiver;
 //    public boolean IsRead;
     public MessageFlag Flag;
-    private String metakey;
+    public String metakey;
     
     public CifraturaOptions Informazioni_Cifratura;
     
-    public Messaggio(String testo)
+//    public Messaggio(String testo)
+//    {
+//        this(-1,testo,"",Metodo_Criptaggio.NESSUNO.name(),"","","",null);
+//    }
+//    
+//    public Messaggio(String testo, String cifrato, String metodo_criptaggio, String lingua, String sender, String receiver)
+//    {
+//        this(-1,testo,cifrato,metodo_criptaggio,lingua,sender,receiver, null);
+//    }
+//    
+//    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver, Integer flag)
+//    {
+//        this(id,testo,cifrato,metodo_criptaggio,"",lingua,sender,receiver, null);
+//    }
+//   
+    public Messaggio( String testo, String metodo_criptaggio, String lingua,String sender, String receiver)
     {
-        this(-1,testo,"",Metodo_Criptaggio.NESSUNO.name(),"","","",null);
+         this(-1,testo,"",metodo_criptaggio,"",lingua,sender,receiver, 0);
     }
     
-    public Messaggio(String testo, String cifrato, String metodo_criptaggio, String lingua, String sender, String receiver)
+    public Messaggio( String testo, String cifrato, String metodo_criptaggio, String metakey, String lingua,String sender, String receiver, Integer flag)
     {
-        this(-1,testo,cifrato,metodo_criptaggio,lingua,sender,receiver, null);
-    }
-    
-    public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String lingua,String sender, String receiver, Integer flag)
-    {
-        this(id,testo,cifrato,metodo_criptaggio,"",lingua,sender,receiver, null);
+         this(-1,testo,cifrato,metodo_criptaggio,"",lingua,sender,receiver, null);
     }
     
     public Messaggio(Integer id, String testo, String cifrato, String metodo_criptaggio, String metakey, String lingua,String sender, String receiver, Integer flag)
@@ -147,14 +157,14 @@ public class Messaggio {
         return Database.GetLastValue("MESSAGGIO", "ID");
      }
     
-     public static ArrayList<Messaggio> GetRequestMessage(Utente reader, int limit)
+     public static ArrayList<ProxyMessage> GetRequestMessage(Utente reader, int limit)
      {
          ArrayList<Messaggio> temp = GetMessageList(reader,limit);
-         ArrayList<Messaggio> list = new ArrayList<Messaggio>();
+         ArrayList<ProxyMessage> list = new ArrayList<ProxyMessage>();
          for(Messaggio mess : temp)
          {
              if(mess.IsRequested())
-                 list.add(mess);
+                 list.add((ProxyMessage.GetProxy(mess)));
          }
          
          return list;
@@ -163,14 +173,14 @@ public class Messaggio {
      
              
              
-     public static ArrayList<Messaggio> GetProposte(Utente reader, int limit)
+     public static ArrayList<ProxyMessage> GetProposte(Utente reader, int limit)
      {
          ArrayList<Messaggio> temp = GetMessageList(reader,limit);
-         ArrayList<Messaggio> list = new ArrayList<Messaggio>();
+         ArrayList<ProxyMessage> list = new ArrayList<ProxyMessage>();
          for(Messaggio mess : temp)
          {
              if(mess.IsAccepted())
-                 list.add(mess);
+                 list.add(ProxyMessage.GetProxy(mess));
          }
          
          return list;
@@ -286,17 +296,18 @@ public class Messaggio {
        return Flag.Letto;
     }
 
-    private void SetRead() {
-        Flag.setRead();
+    public void SetRead() {
+        Flag.Letto=true;
+//        Flag.setRead();
         UpdateFlag();
     }
 
     private boolean IsRequested() {
-        return !Flag.Accettato && !Flag.Rifiutato;
+        return !Flag.Accettato && !Flag.Rifiutato && !Flag.Letto;
     }
 
     private boolean IsAccepted() {
-        return Flag.Accettato && !Flag.Rifiutato;
+        return Flag.Accettato &&!Flag.Rifiutato || Flag.Letto;
     }
 
     public void SetRefuse() {
@@ -309,6 +320,10 @@ public class Messaggio {
         Flag.Accettato = true;
         Flag.Rifiutato = false;
         UpdateFlag();
+    }
+
+    public Integer GetFlagInteger() {
+        return Flag.getInt();
     }
     
     
@@ -427,10 +442,6 @@ public class Messaggio {
        
         }
 
-        private void setRead() {
-            flag = flag | 8 ; 
-            Update();
-        }
        
         
         public void Update()

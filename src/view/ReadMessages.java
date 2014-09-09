@@ -18,6 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.border.Border;
+import model.ProxyMessage;
 
 /**
  *
@@ -41,7 +42,7 @@ public class ReadMessages extends javax.swing.JFrame {
 
     private void CreaLista()
     {
-        ArrayList<Messaggio> list=Messaggio.GetRequestMessage(reader,10);
+        ArrayList<ProxyMessage> list=Messaggio.GetRequestMessage(reader,10);
         PanelNuovi.setLayout(new GridLayout(list.size()+1 , 4 ));
         PanelNuovi.add(new JLabel("Author"));
         PanelNuovi.add(new JLabel("Metodo"));
@@ -225,6 +226,7 @@ public class ReadMessages extends javax.swing.JFrame {
         public void actionPerformed(ActionEvent e) {
             //read Message
             GuiController.GoReadMessage(reader,Mess,This,parent);
+            Mess.SetRead();
             Refresh();
 
             

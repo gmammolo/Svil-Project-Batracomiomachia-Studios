@@ -141,14 +141,7 @@ public class GuiController {
             Status.setText("Attenzione: Destinatario non accettabile");
             return;
         }
-        //recuperare ID
-//        int ID = Messaggio.GetLastID();
-//        if(ID < 0)
-//        {
-//            Status.setText("Attenzione: Errore temporaneo durante il salvataggio nel db");
-//            return;
-//        }
-        //salvare nel db
+
         Metodo_Criptaggio method= Metodo_Criptaggio.NESSUNO;
         switch ((String)MetodoCriptaggio.getSelectedItem())
         {
@@ -162,7 +155,7 @@ public class GuiController {
                 method= Metodo_Criptaggio.NESSUNO;
                 break;
         }
-        new Messaggio(Testo.getText(), "" ,  method.name(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
+        new Messaggio(Testo.getText() ,  method.name(), (String)Linguaggio.getSelectedItem(), Sender.Username, Dest).Insert();
         Parent.sendMessage("Messaggio inviato con successo");
         Status.setText("Messaggio Inviato con successo");
         //chiudere
