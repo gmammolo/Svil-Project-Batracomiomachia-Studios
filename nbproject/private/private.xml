@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Giuseppe/Documents/NetBeansProjects/ProjectSvil/src/controller/GuiController.java</file>
-            <file>file:/C:/Users/Giuseppe/Documents/NetBeansProjects/ProjectSvil/src/view/ReadMessage.java</file>
             <file>file:/C:/Users/Giuseppe/Documents/NetBeansProjects/ProjectSvil/src/model/Messaggio.java</file>
             <file>file:/C:/Users/Giuseppe/Documents/NetBeansProjects/ProjectSvil/src/model/Utente.java</file>
+            <file>file:/C:/Users/Giuseppe/Documents/NetBeansProjects/ProjectSvil/src/message/TimeMessage.java</file>
+            <file>file:/C:/Users/Giuseppe/Documents/NetBeansProjects/ProjectSvil/src/model/ProxyMessage.java</file>
             <file>file:/C:/Users/Giuseppe/Documents/NetBeansProjects/ProjectSvil/src/view/ReadMessages.java</file>
         </group>
     </open-files>

@@ -67,7 +67,7 @@ public class Sessione {
             if(Albero!=null)
             {
                 Storico=(AlberoIpotesi)Database.deserialize((byte[])Albero);
-                            Ipotesi = Storico.GetLista();
+                Ipotesi = Storico.GetLista();
             }
         } catch (IOException ex) {
             Logger.getLogger(Sessione.class.getName()).log(Level.SEVERE, null, ex);

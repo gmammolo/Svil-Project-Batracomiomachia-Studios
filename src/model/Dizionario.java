@@ -48,20 +48,6 @@ public class Dizionario {
         }
     }
    
-//    /**
-//     * Metodo di inserimento nel DB
-//     * @deprecated consigliato l'utilizzo di Messaggio.AddMessaggio(...)
-//     */
-//    public void Insert()
-//    {
-//        String[] column =new String[]{"PAROLA"};
-//            Database.Insert("DIZIONARIO",column, new DataBaseElement[]
-//                                            {
-//                                               // new DataBaseElement(Type.INT, Id),
-//                                                new DataBaseElement(Type.STRING, Parola),
-//                                            });
-//    }
-//    
     public static void CreateTable()
     {
 
