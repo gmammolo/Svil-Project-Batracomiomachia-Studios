@@ -48,6 +48,8 @@ public class AlberoIpotesi implements Serializable {
             
 
     public void Undo() throws Exception {
+        if(index.equals(root))
+            return;
        index = root.GetParentNode(index);
     }   
     

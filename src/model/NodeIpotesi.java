@@ -144,8 +144,11 @@ public class NodeIpotesi implements Serializable
 
     public boolean equals(NodeIpotesi node)
     {
-        if(a == node.a && b==node.b)
-            return true;
+        if(node!=null)
+        {
+            if(a == node.a && b==node.b)
+                return true;
+        }
         return false;
     }
    
