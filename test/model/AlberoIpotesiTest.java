@@ -60,12 +60,14 @@ public class AlberoIpotesiTest {
     @Test
     public void testAddNewNode() {
         System.out.println("AddNewNode");
-        char a = ' ';
-        char b = ' ';
+        char a = 'a';
+        char b = 'b';
         AlberoIpotesi instance = new AlberoIpotesi();
         instance.AddNewNode(a, b);
+        
+        assertTrue(instance.index.equals(new NodeIpotesi('a','b')));
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+//        fail("The test case is a prototype.");
     }
 
     /**
@@ -74,11 +76,13 @@ public class AlberoIpotesiTest {
     @Test
     public void testAddNode() {
         System.out.println("AddNode");
-        NodeIpotesi Nodo = null;
+        NodeIpotesi Nodo = new NodeIpotesi('a','b');
         AlberoIpotesi instance = new AlberoIpotesi();
+        
         instance.AddNode(Nodo);
+        assertTrue(instance.index.equals(Nodo));
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+//        fail("The test case is a prototype.");
     }
 
     /**
@@ -104,11 +108,14 @@ public class AlberoIpotesiTest {
     public void testGetLista() {
         System.out.println("GetLista");
         AlberoIpotesi instance = new AlberoIpotesi();
-        ListaIpotesi expResult = null;
+        instance.AddNewNode('a', 'b');
+        ListaIpotesi expResult = new ListaIpotesi();
+        expResult.AddNewNode(' ', ' ');
+        expResult.AddNewNode('a', 'b');
         ListaIpotesi result = instance.GetLista();
-        assertEquals(expResult, result);
+        assertEquals(expResult.toString(), result.toString());
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+//        fail("The test case is a prototype.");
     }
 
     /**

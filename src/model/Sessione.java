@@ -145,8 +145,9 @@ public class Sessione {
     public void addKey(char a, char b)
     {
 //        Key.put(a, String.valueOf(b).toUpperCase());
-        Ipotesi.AddNewNode(a, b);
-        Storico.AddNewNode(a, b);
+        
+       if(Ipotesi.AddNewNode(a, b));
+            Storico.AddNewNode(a, b);
     }
     
     

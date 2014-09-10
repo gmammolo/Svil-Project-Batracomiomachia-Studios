@@ -124,7 +124,7 @@ public class NodeIpotesi implements Serializable
      */
     public NodeIpotesi GetParentNode(NodeIpotesi  node)
     {
-        for(int i=0; i< son.size(); i++)
+        for(int i=son.size()-1; i>= 0; i-- )
         {
             if(son.get(i).equals(node))
                 return this;

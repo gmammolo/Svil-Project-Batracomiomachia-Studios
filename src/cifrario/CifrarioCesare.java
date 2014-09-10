@@ -23,6 +23,7 @@ public class CifrarioCesare extends CryptSystem {
         super(metakey);
     }
     
+    @Override
     public String GenerateKey() {
         GenerateKeyCesare();
         return Serialize();
@@ -34,6 +35,7 @@ public class CifrarioCesare extends CryptSystem {
         Key = 1 + (int)(Math.random()*length); 
     }
     
+    @Override
     public String Crypt( String s ) 
     {
         return Crypt(  s , Key );

@@ -5,6 +5,8 @@
  */
 package model;
 
+import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -19,28 +21,30 @@ public class ListaIpotesi {
         root= new NodeIpotesi(' ', ' ');
     }
 
-    public  void AddNewNode(char a, char b)
+    public  boolean AddNewNode(char a, char b)
     {    
         NodeIpotesi Nodo=new NodeIpotesi(a,b);
-        AddNode(Nodo);
+        return AddNode(Nodo);
     }
     
     
-    public  void AddNode(NodeIpotesi Nodo)
+    public  boolean AddNode(NodeIpotesi Nodo)
     {    
         //Nodo.parent=root;
         NodeIpotesi index=root;
         while(index.son.size()>0)
         {
             index = index.son.get(0);
-            if(index.a == Nodo.a)
+            if(index.a == Nodo.a || index.b == Nodo.b)
             {
-                index.b=Nodo.b;
-                return;             
+                JOptionPane.showMessageDialog(null,"Sostituzione già presente");
+                //index.b=Nodo.b;
+                return false;             
             }
         }
         
         index.addNode(Nodo);
+        return true;
         //root = Nodo;
     }
 

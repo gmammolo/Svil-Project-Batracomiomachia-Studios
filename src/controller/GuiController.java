@@ -262,7 +262,7 @@ public class GuiController {
     }
 
     public static void ShowStorico(SessioneGui parent) {
-        parent.setVisible(false);
+//        parent.setVisible(false);
         JFrame fr = new Storico(parent);
         fr.setVisible(true);
         
